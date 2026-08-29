@@ -1,6 +1,6 @@
 ﻿# NOVA - Raw and Refined
 
-A modern Streetwear E-Commerce and Store Management System built with React (Frontend), Spring Boot (Backend), and SQL Server.
+A modern Streetwear E-Commerce and Store Management System built with React (Frontend), Spring Boot (Backend), and MySQL.
 
 ---
 
@@ -8,14 +8,14 @@ A modern Streetwear E-Commerce and Store Management System built with React (Fro
 
 - **Frontend**: React 19, Vite, Tailwind CSS
 - **Backend**: Java 17, Spring Boot 3, Spring Data JPA, Spring Security (JWT)
-- **Database**: Microsoft SQL Server
+- **Database**: MySQL 8.0+
 
 ---
 
 ## Quick Start
 
 ### 1. Database
-Execute `NovaApparelDB.sql` in SQL Server Management Studio (SSMS).
+Import and execute `NovaApparelDB.sql` in MySQL Workbench, phpMyAdmin, or MySQL CLI.
 
 ### 2. Frontend
 ```bash
@@ -30,7 +30,7 @@ Application URL: `http://localhost:5173/`
 cd backend
 mvn spring-boot:run
 ```
-API URL: `http://localhost:8080/`
+API URL: `http://localhost:8080/`  
 Swagger Docs: `http://localhost:8080/swagger-ui.html`
 
 ---
