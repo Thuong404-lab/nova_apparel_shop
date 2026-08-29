@@ -1,133 +1,93 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { 
   ShieldCheck, 
   CreditCard, 
   Wallet, 
   Truck, 
-  QrCode, 
   CheckCircle2, 
   ArrowRight, 
   Sparkles,
-  AlertCircle
+  QrCode,
+  MapPin,
+  User,
+  Phone
 } from 'lucide-react';
-import confetti from 'canvas-confetti';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { orderApi, walletApi } from '../../services/api';
 import { formatCurrency } from '../../utils/formatters';
+import confetti from 'canvas-confetti';
+
+const FREE_SHIPPING_THRESHOLD = 500000;
 
 export const CheckoutPage = () => {
-  const { items, subtotal, totalItems, clearCart } = useCart();
+  const { items, subtotal, clearCart } = useCart();
   const { user } = useAuth();
   const { addToast } = useToast();
   const navigate = useNavigate();
 
-  // Form State
-  const [fullName, setFullName] = useState(user?.fullName || 'Nguyễn Văn A');
-  const [phone, setPhone] = useState(user?.phone || '0901112223');
-  const [address, setAddress] = useState(user?.address || '12 Hai Bà Trưng, Hoàn Kiếm, Hà Nội');
-  const [note, setNote] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState('COD'); // 'COD' | 'Wallet' | 'VNPay'
+  const [formData, setFormData] = useState({
+    fullName: user?.fullName || 'Nguyễn Văn A',
+    phone: '0987654321',
+    address: '123 Đường Cầu Giấy',
+    city: 'Hà Nội',
+    paymentMethod: 'Wallet', // Wallet | COD | VNPay
+    note: ''
+  });
 
-  // Wallet State
-  const [walletBalance, setWalletBalance] = useState(0);
+  const [walletBalance, setWalletBalance] = useState(5000000);
   const [loading, setLoading] = useState(false);
-
-  // VNPay Modal State
-  const [showVNPayModal, setShowVNPayModal] = useState(false);
-  const [vnpayCountdown, setVnpayCountdown] = useState(300); // 5 mins
   const [orderSuccess, setOrderSuccess] = useState(null);
 
-  const shippingFee = subtotal >= 500000 || subtotal === 0 ? 0 : 30000;
-  const finalTotal = subtotal + shippingFee;
-
   useEffect(() => {
-    const fetchWallet = async () => {
+    async function loadWallet() {
       const res = await walletApi.get();
       if (res.success && res.data) {
         setWalletBalance(res.data.balance);
       }
-    };
-    fetchWallet();
+    }
+    loadWallet();
   }, []);
 
-  const triggerConfetti = () => {
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 }
-    });
-  };
+  const shippingFee = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : 30000;
+  const finalTotal = subtotal + shippingFee;
 
-  const handlePlaceOrder = async (e) => {
+  const handleSubmitOrder = async (e) => {
     e.preventDefault();
-    if (!fullName || !phone || !address) {
-      addToast('Vui lòng điền đầy đủ thông tin nhận hàng!', 'error');
+    if (items.length === 0) return;
+
+    if (formData.paymentMethod === 'Wallet' && walletBalance < finalTotal) {
+      addToast('Số dư Ví Nova Wallet không đủ. Vui lòng nạp thêm tiền hoặc chọn hình thức COD!', 'error', 'SỐ DƯ KHÔNG ĐỦ');
       return;
     }
 
-    if (items.length === 0) {
-      addToast('Giỏ hàng của bạn đang trống!', 'error');
-      return;
-    }
-
-    // Check wallet balance
-    if (paymentMethod === 'Wallet' && walletBalance < finalTotal) {
-      addToast('Số dư Ví Nova Wallet không đủ để thanh toán. Vui lòng nạp thêm hoặc chọn phương thức khác!', 'error');
-      return;
-    }
-
-    // If VNPay selected -> open VNPay QR Simulator modal
-    if (paymentMethod === 'VNPay') {
-      setShowVNPayModal(true);
-      return;
-    }
-
-    // Proceed with COD or Wallet payment
     setLoading(true);
     try {
       const orderPayload = {
-        customerId: user?.id || 'CUST001',
-        customerName: fullName,
-        customerPhone: phone,
-        shippingAddress: address,
+        customerId: user?.userId || 'CUST001',
+        customerName: formData.fullName,
+        phone: formData.phone,
+        address: `${formData.address}, ${formData.city}`,
+        paymentMethod: formData.paymentMethod,
+        items: items,
         totalAmount: finalTotal,
-        paymentMethod: paymentMethod,
-        items: items
+        note: formData.note
       };
 
       const res = await orderApi.create(orderPayload);
       if (res.success) {
         setOrderSuccess(res.data);
-        triggerConfetti();
-        addToast('Đặt hàng thành công!', 'success', 'ĐƠN HÀNG ĐÃ TẠO');
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleVNPayPaymentSuccess = async () => {
-    setShowVNPayModal(false);
-    setLoading(true);
-    try {
-      const orderPayload = {
-        customerId: user?.id || 'CUST001',
-        customerName: fullName,
-        customerPhone: phone,
-        shippingAddress: address,
-        totalAmount: finalTotal,
-        paymentMethod: 'VNPay',
-        items: items
-      };
-
-      const res = await orderApi.create(orderPayload);
-      if (res.success) {
-        setOrderSuccess(res.data);
-        triggerConfetti();
-        addToast('Thanh toán VNPay thành công!', 'success', 'GIAO DỊCH HOÀN TẤT');
+        clearCart();
+        
+        // Confetti explosion
+        confetti({
+          particleCount: 100,
+          spread: 80,
+          origin: { y: 0.6 }
+        });
       }
     } finally {
       setLoading(false);
@@ -136,352 +96,298 @@ export const CheckoutPage = () => {
 
   if (orderSuccess) {
     return (
-      <div className="max-w-2xl mx-auto px-4 py-16">
-        <div className="bg-white border-3 border-black p-8 sm:p-12 text-center shadow-[10px_10px_0px_#00ff66] space-y-6">
-          <div className="w-20 h-20 bg-[#00ff66] text-black border-2 border-black flex items-center justify-center mx-auto shadow-[4px_4px_0px_#000]">
-            <CheckCircle2 className="w-10 h-10" />
-          </div>
+      <div className="max-w-3xl mx-auto px-4 py-20 text-center space-y-8">
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ type: 'spring', damping: 15 }}
+          className="w-24 h-24 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-xl"
+        >
+          <CheckCircle2 className="w-12 h-12" />
+        </motion.div>
 
-          <div>
-            <span className="neo-badge bg-black text-[#00ff66] text-xs mb-2">
-              ĐẶT HÀNG THÀNH CÔNG
+        <div className="space-y-3">
+          <span className="text-xs font-bold uppercase tracking-widest text-emerald-600 font-mono">
+            ORDER COMPLETED
+          </span>
+          <h1 className="font-display font-black text-3xl sm:text-4xl text-zinc-950">
+            Đặt Hàng Thành Công!
+          </h1>
+          <p className="text-sm text-zinc-500 max-w-md mx-auto">
+            Mã đơn hàng: <strong className="text-zinc-950 font-mono">{orderSuccess.orderId}</strong>. Đơn hàng đang được bộ phận kho NOVA đóng gói và giao hỏa tốc đến bạn.
+          </p>
+        </div>
+
+        <div className="p-6 bg-white rounded-3xl border border-zinc-200 shadow-sm max-w-md mx-auto text-left space-y-3 text-xs">
+          <div className="flex justify-between">
+            <span className="text-zinc-500">Khách hàng:</span>
+            <span className="font-bold text-zinc-900">{orderSuccess.customerName}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-zinc-500">Phương thức:</span>
+            <span className="font-bold text-zinc-900">{orderSuccess.paymentMethod}</span>
+          </div>
+          <div className="flex justify-between border-t border-zinc-100 pt-3">
+            <span className="text-zinc-500">Tổng tiền:</span>
+            <span className="font-display font-black text-base text-emerald-600">
+              {formatCurrency(orderSuccess.totalAmount)}
             </span>
-            <h2 className="font-display font-black text-3xl uppercase tracking-tight">
-              CẢM ƠN BẠN ĐÃ MUA SẮM!
-            </h2>
-            <p className="text-xs text-neutral-600 font-mono mt-1">
-              Mã đơn hàng: <span className="font-black text-black">{orderSuccess.orderId}</span>
-            </p>
           </div>
+        </div>
 
-          <div className="p-4 bg-neutral-50 border-2 border-black text-left text-xs space-y-2">
-            <div className="flex justify-between">
-              <span className="text-neutral-500 font-medium">Người nhận:</span>
-              <span className="font-bold">{orderSuccess.customerName} ({orderSuccess.customerPhone})</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-neutral-500 font-medium">Địa chỉ giao:</span>
-              <span className="font-bold text-right max-w-xs">{orderSuccess.shippingAddress}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-neutral-500 font-medium">Phương thức:</span>
-              <span className="font-bold uppercase text-blue-600">{orderSuccess.paymentMethod}</span>
-            </div>
-            <div className="flex justify-between pt-2 border-t border-neutral-300 font-display font-black text-sm">
-              <span>Tổng thanh toán:</span>
-              <span className="text-[#ff4d00]">{formatCurrency(orderSuccess.totalAmount)}</span>
-            </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-3 pt-2">
-            <Link
-              to={`/orders/${orderSuccess.orderId}`}
-              className="flex-1 py-3.5 neo-btn neo-btn-neon text-xs text-center"
-            >
-              Theo Dõi Đơn Hàng
-            </Link>
-            <Link
-              to="/catalog"
-              className="flex-1 py-3.5 neo-btn neo-btn-secondary text-xs text-center"
-            >
-              Tiếp Tục Mua Sắm
-            </Link>
-          </div>
+        <div className="flex justify-center gap-4 pt-4">
+          <Link to="/orders" className="luxury-btn-accent text-xs">
+            <span>Quản Lý Đơn Hàng</span>
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+          <Link to="/catalog" className="luxury-btn-secondary text-xs">
+            Tiếp Tục Mua Sắm
+          </Link>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-      {/* Header Banner */}
-      <div className="bg-black text-white p-6 border-3 border-black shadow-[6px_6px_0px_#00ff66]">
-        <span className="font-mono text-xs text-[#00ff66] uppercase tracking-widest block mb-1">
-          SECURE CHECKOUT // 256-BIT ENCRYPTION
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
+      
+      {/* Header */}
+      <div>
+        <span className="text-xs font-bold uppercase tracking-widest text-emerald-600 font-mono">
+          CHECKOUT // STEP 2
         </span>
-        <h1 className="font-display font-black text-2xl sm:text-4xl uppercase tracking-tight">
-          TIẾN HÀNH ĐẶT HÀNG & THANH TOÁN
+        <h1 className="font-display font-black text-3xl sm:text-4xl text-zinc-950 mt-1">
+          Thông Tin Thanh Toán
         </h1>
       </div>
 
-      <form onSubmit={handlePlaceOrder}>
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <form onSubmit={handleSubmitOrder} className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+        
+        {/* Left Form: Shipping & Payment (7 cols) */}
+        <div className="lg:col-span-7 space-y-8">
           
-          {/* Left: Shipping & Payment (7 Cols) */}
-          <div className="lg:col-span-7 space-y-6">
-            
-            {/* Step 1: Shipping Info */}
-            <div className="bg-white border-2 border-black p-6 shadow-[6px_6px_0px_#000] space-y-4">
-              <div className="flex items-center gap-2 pb-3 border-b-2 border-black">
-                <div className="w-6 h-6 bg-black text-white font-display font-black text-xs flex items-center justify-center">
-                  1
-                </div>
-                <h3 className="font-display font-black text-base uppercase">
-                  THÔNG TIN GIAO HÀNG
-                </h3>
-              </div>
+          {/* 1. Shipping Details */}
+          <div className="bg-white rounded-3xl border border-zinc-200 p-6 sm:p-8 space-y-6 shadow-sm">
+            <h3 className="font-display font-bold text-lg text-zinc-950 flex items-center gap-2">
+              <MapPin className="w-5 h-5 text-emerald-600" />
+              <span>Địa Chỉ Nhận Hàng</span>
+            </h3>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-display font-bold uppercase mb-1">
-                    Họ và tên người nhận *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    placeholder="Nguyễn Văn A"
-                    className="neo-input text-xs"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-display font-bold uppercase mb-1">
-                    Số điện thoại liên hệ *
-                  </label>
-                  <input
-                    type="tel"
-                    required
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="0901234567"
-                    className="neo-input text-xs"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-display font-bold uppercase mb-1">
-                  Địa chỉ nhận hàng chi tiết *
-                </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5 sm:col-span-2">
+                <label className="text-xs font-bold text-zinc-800">Họ và Tên người nhận *</label>
                 <input
                   type="text"
                   required
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  placeholder="Số nhà, tên đường, phường/xã, quận/huyện, tỉnh/thành phố"
-                  className="neo-input text-xs"
+                  value={formData.fullName}
+                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                  className="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-3 text-xs outline-none focus:border-zinc-950"
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-display font-bold uppercase mb-1">
-                  Ghi chú đơn hàng (Tùy chọn)
-                </label>
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-zinc-800">Số Điện Thoại *</label>
+                <input
+                  type="tel"
+                  required
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  className="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-3 text-xs outline-none focus:border-zinc-950"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-zinc-800">Tỉnh / Thành Phố *</label>
+                <input
+                  type="text"
+                  required
+                  value={formData.city}
+                  onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                  className="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-3 text-xs outline-none focus:border-zinc-950"
+                />
+              </div>
+
+              <div className="space-y-1.5 sm:col-span-2">
+                <label className="text-xs font-bold text-zinc-800">Địa chỉ cụ thể (Số nhà, tên đường, phường/xã) *</label>
+                <input
+                  type="text"
+                  required
+                  value={formData.address}
+                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                  className="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-3 text-xs outline-none focus:border-zinc-950"
+                />
+              </div>
+
+              <div className="space-y-1.5 sm:col-span-2">
+                <label className="text-xs font-bold text-zinc-800">Ghi chú cho shipper (Tùy chọn)</label>
                 <textarea
                   rows="2"
-                  value={note}
-                  onChange={(e) => setNote(e.target.value)}
-                  placeholder="Ví dụ: Giao giờ hành chính, gọi trước khi đến..."
-                  className="neo-input text-xs"
+                  value={formData.note}
+                  onChange={(e) => setFormData({ ...formData, note: e.target.value })}
+                  placeholder="VD: Giao hàng vào giờ hành chính, gọi trước khi đến..."
+                  className="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-3 text-xs outline-none focus:border-zinc-950"
                 />
               </div>
             </div>
-
-            {/* Step 2: Payment Method Selector */}
-            <div className="bg-white border-2 border-black p-6 shadow-[6px_6px_0px_#000] space-y-4">
-              <div className="flex items-center gap-2 pb-3 border-b-2 border-black">
-                <div className="w-6 h-6 bg-black text-white font-display font-black text-xs flex items-center justify-center">
-                  2
-                </div>
-                <h3 className="font-display font-black text-base uppercase">
-                  CHỌN PHƯƠNG THỨC THANH TOÁN
-                </h3>
-              </div>
-
-              <div className="space-y-3">
-                {/* 1. COD */}
-                <label 
-                  className={`p-4 border-2 border-black flex items-start gap-3 cursor-pointer transition-all ${
-                    paymentMethod === 'COD' ? 'bg-neutral-50 shadow-[3px_3px_0px_#000] ring-2 ring-black' : 'hover:bg-neutral-50'
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="payment"
-                    value="COD"
-                    checked={paymentMethod === 'COD'}
-                    onChange={(e) => setPaymentMethod(e.target.value)}
-                    className="mt-1 accent-black"
-                  />
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <span className="font-display font-black text-sm uppercase">Thanh toán khi nhận hàng (COD)</span>
-                      <Truck className="w-5 h-5 text-black" />
-                    </div>
-                    <p className="text-xs text-neutral-500 mt-0.5">Thanh toán tiền mặt cho shipper khi nhận và kiểm tra hàng.</p>
-                  </div>
-                </label>
-
-                {/* 2. Wallet */}
-                <label 
-                  className={`p-4 border-2 border-black flex items-start gap-3 cursor-pointer transition-all ${
-                    paymentMethod === 'Wallet' ? 'bg-neutral-50 shadow-[3px_3px_0px_#000] ring-2 ring-black' : 'hover:bg-neutral-50'
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="payment"
-                    value="Wallet"
-                    checked={paymentMethod === 'Wallet'}
-                    onChange={(e) => setPaymentMethod(e.target.value)}
-                    className="mt-1 accent-black"
-                  />
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <span className="font-display font-black text-sm uppercase">Ví Điện Tử Fashion Wallet</span>
-                      <Wallet className="w-5 h-5 text-purple-600" />
-                    </div>
-                    <p className="text-xs text-neutral-500 mt-0.5">
-                      Số dư khả dụng: <span className="font-mono font-bold text-black">{formatCurrency(walletBalance)}</span>
-                    </p>
-                    {walletBalance < finalTotal && (
-                      <span className="text-[11px] text-red-600 font-bold block mt-1">
-                        ⚠️ Số dư không đủ (Cần thêm {formatCurrency(finalTotal - walletBalance)})
-                      </span>
-                    )}
-                  </div>
-                </label>
-
-                {/* 3. VNPay */}
-                <label 
-                  className={`p-4 border-2 border-black flex items-start gap-3 cursor-pointer transition-all ${
-                    paymentMethod === 'VNPay' ? 'bg-neutral-50 shadow-[3px_3px_0px_#000] ring-2 ring-black' : 'hover:bg-neutral-50'
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="payment"
-                    value="VNPay"
-                    checked={paymentMethod === 'VNPay'}
-                    onChange={(e) => setPaymentMethod(e.target.value)}
-                    className="mt-1 accent-black"
-                  />
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <span className="font-display font-black text-sm uppercase">Cổng Thanh Toán VNPay QR</span>
-                      <QrCode className="w-5 h-5 text-blue-600" />
-                    </div>
-                    <p className="text-xs text-neutral-500 mt-0.5">Quét mã QR qua ứng dụng ngân hàng / VNPAY để thanh toán ngay lập tức.</p>
-                  </div>
-                </label>
-              </div>
-            </div>
-
           </div>
 
-          {/* Right: Order Review & Submit (5 Cols) */}
-          <div className="lg:col-span-5 space-y-6">
-            <div className="bg-white border-2 border-black p-6 shadow-[6px_6px_0px_#000] space-y-6 sticky top-28">
-              <h3 className="font-display font-black text-lg uppercase pb-3 border-b-2 border-black">
-                ĐƠN HÀNG ({totalItems} SẢN PHẨM)
-              </h3>
+          {/* 2. Payment Method */}
+          <div className="bg-white rounded-3xl border border-zinc-200 p-6 sm:p-8 space-y-6 shadow-sm">
+            <h3 className="font-display font-bold text-lg text-zinc-950 flex items-center gap-2">
+              <CreditCard className="w-5 h-5 text-emerald-600" />
+              <span>Phương Thức Thanh Toán</span>
+            </h3>
 
-              {/* Items Preview */}
-              <div className="divide-y divide-neutral-200 max-h-60 overflow-y-auto space-y-3 pr-2">
-                {items.map((item) => (
-                  <div key={item.variantId} className="flex gap-3 items-center pt-3 first:pt-0">
-                    <img src={item.image} alt={item.name} className="w-12 h-16 object-cover border border-black" />
-                    <div className="flex-1 text-xs leading-tight">
-                      <h4 className="font-display font-bold line-clamp-1">{item.name}</h4>
-                      <span className="text-[10px] font-mono text-neutral-500">
-                        {item.sizeName} - {item.colorName} x {item.quantity}
-                      </span>
-                    </div>
-                    <span className="font-display font-bold text-xs">
-                      {formatCurrency(item.unitPrice * item.quantity)}
+            <div className="space-y-3">
+              
+              {/* Option 1: Nova Wallet */}
+              <label 
+                className={`flex items-start gap-4 p-4 rounded-2xl border-2 transition-all cursor-pointer ${
+                  formData.paymentMethod === 'Wallet' ? 'border-zinc-950 bg-zinc-50' : 'border-zinc-200 bg-white hover:border-zinc-300'
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="Wallet"
+                  checked={formData.paymentMethod === 'Wallet'}
+                  onChange={() => setFormData({ ...formData, paymentMethod: 'Wallet' })}
+                  className="mt-1 accent-zinc-950"
+                />
+                <div className="flex-1 space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="font-display font-bold text-xs text-zinc-950 flex items-center gap-1.5">
+                      <Wallet className="w-4 h-4 text-emerald-600" />
+                      Ví Điện Tử Nova Wallet (Khuyên dùng)
+                    </span>
+                    <span className="text-[11px] font-mono font-bold text-emerald-600">
+                      Số dư: {formatCurrency(walletBalance)}
                     </span>
                   </div>
-                ))}
-              </div>
-
-              {/* Calculations */}
-              <div className="space-y-2 pt-4 border-t-2 border-black text-xs">
-                <div className="flex justify-between text-neutral-600">
-                  <span>Tạm tính:</span>
-                  <span className="font-mono font-bold text-black">{formatCurrency(subtotal)}</span>
+                  <p className="text-[11px] text-zinc-500">
+                    Thanh toán trừ tiền tức thì không mất phí, tự động tích lũy điểm thành viên.
+                  </p>
+                  {walletBalance < finalTotal && (
+                    <p className="text-[11px] text-rose-500 font-semibold">
+                      ⚠️ Số dư ví không đủ (Cần thêm {formatCurrency(finalTotal - walletBalance)}). Hãy nạp thêm tại trang Ví hoặc chọn COD.
+                    </p>
+                  )}
                 </div>
-                <div className="flex justify-between text-neutral-600">
-                  <span>Phí vận chuyển:</span>
-                  <span className="font-mono font-bold text-emerald-600">
-                    {shippingFee === 0 ? 'MIỄN PHÍ' : formatCurrency(shippingFee)}
+              </label>
+
+              {/* Option 2: COD */}
+              <label 
+                className={`flex items-start gap-4 p-4 rounded-2xl border-2 transition-all cursor-pointer ${
+                  formData.paymentMethod === 'COD' ? 'border-zinc-950 bg-zinc-50' : 'border-zinc-200 bg-white hover:border-zinc-300'
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="COD"
+                  checked={formData.paymentMethod === 'COD'}
+                  onChange={() => setFormData({ ...formData, paymentMethod: 'COD' })}
+                  className="mt-1 accent-zinc-950"
+                />
+                <div className="flex-1 space-y-1">
+                  <span className="font-display font-bold text-xs text-zinc-950 flex items-center gap-1.5">
+                    <Truck className="w-4 h-4 text-emerald-600" />
+                    Thanh toán tiền mặt khi nhận hàng (COD)
+                  </span>
+                  <p className="text-[11px] text-zinc-500">
+                    Kiểm tra hàng trước khi thanh toán cho nhân viên bưu tá.
+                  </p>
+                </div>
+              </label>
+
+              {/* Option 3: VNPay QR */}
+              <label 
+                className={`flex items-start gap-4 p-4 rounded-2xl border-2 transition-all cursor-pointer ${
+                  formData.paymentMethod === 'VNPay' ? 'border-zinc-950 bg-zinc-50' : 'border-zinc-200 bg-white hover:border-zinc-300'
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="VNPay"
+                  checked={formData.paymentMethod === 'VNPay'}
+                  onChange={() => setFormData({ ...formData, paymentMethod: 'VNPay' })}
+                  className="mt-1 accent-zinc-950"
+                />
+                <div className="flex-1 space-y-1">
+                  <span className="font-display font-bold text-xs text-zinc-950 flex items-center gap-1.5">
+                    <QrCode className="w-4 h-4 text-emerald-600" />
+                    Cổng Thanh Toán VNPay (Quét mã QR Ngân Hàng)
+                  </span>
+                  <p className="text-[11px] text-zinc-500">
+                    Hỗ trợ quét mã QR qua hơn 40 ứng dụng ngân hàng và ví điện tử.
+                  </p>
+                </div>
+              </label>
+
+            </div>
+          </div>
+
+        </div>
+
+        {/* Right: Order Review & Submit (5 cols) */}
+        <div className="lg:col-span-5 space-y-6 sticky top-28">
+          <div className="bg-white rounded-3xl border border-zinc-200 p-6 sm:p-8 space-y-6 shadow-sm">
+            <h3 className="font-display font-bold text-base text-zinc-950">
+              Kiểm Tra Đơn Hàng ({items.length} món)
+            </h3>
+
+            {/* Items Mini List */}
+            <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
+              {items.map((item) => (
+                <div key={item.variantId} className="flex items-center gap-3 text-xs">
+                  <img src={item.image} alt="" className="w-12 h-14 object-cover rounded-xl bg-zinc-100 flex-shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-zinc-900 truncate">{item.name}</p>
+                    <p className="text-zinc-400 text-[11px]">{item.sizeName} • {item.colorName} • SL: {item.quantity}</p>
+                  </div>
+                  <span className="font-mono font-bold text-zinc-900">
+                    {formatCurrency(item.unitPrice * item.quantity)}
                   </span>
                 </div>
-                <div className="flex justify-between items-center text-lg font-display font-black pt-3 border-t border-neutral-300">
-                  <span>TỔNG THANH TOÁN:</span>
-                  <span className="text-[#ff4d00]">{formatCurrency(finalTotal)}</span>
-                </div>
+              ))}
+            </div>
+
+            {/* Price Calculations */}
+            <div className="space-y-3 pt-4 border-t border-zinc-100 text-xs text-zinc-600">
+              <div className="flex justify-between">
+                <span>Tạm tính tiền hàng:</span>
+                <span className="font-mono font-bold text-zinc-950">{formatCurrency(subtotal)}</span>
               </div>
-
-              {/* Submit CTA */}
-              <button
-                type="submit"
-                disabled={loading || (paymentMethod === 'Wallet' && walletBalance < finalTotal)}
-                className="w-full py-4 neo-btn neo-btn-neon text-xs tracking-wider flex items-center justify-center gap-2 disabled:opacity-50"
-              >
-                {loading ? 'Đang Xử Lý...' : `Xác Nhận Đặt Hàng (${formatCurrency(finalTotal)})`} <ArrowRight className="w-4 h-4" />
-              </button>
-
-              <div className="text-center">
-                <Link to="/cart" className="text-xs font-display font-bold uppercase text-neutral-500 hover:text-black">
-                  ← Chỉnh Sửa Giỏ Hàng
-                </Link>
+              <div className="flex justify-between">
+                <span>Phí vận chuyển:</span>
+                <span className="font-mono font-semibold text-zinc-950">
+                  {shippingFee === 0 ? 'MIỄN PHÍ' : formatCurrency(shippingFee)}
+                </span>
+              </div>
+              <div className="pt-4 border-t border-zinc-200 flex justify-between items-baseline">
+                <span className="font-bold text-sm text-zinc-950">Tổng thanh toán:</span>
+                <span className="font-display font-black text-2xl text-emerald-600">
+                  {formatCurrency(finalTotal)}
+                </span>
               </div>
             </div>
-          </div>
 
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              type="submit"
+              disabled={loading}
+              className="w-full luxury-btn-accent text-sm py-4 justify-center shadow-lg shadow-emerald-500/20 cursor-pointer"
+            >
+              <span>{loading ? 'Đang Xử Lý Đơn Hàng...' : `Xác Nhận Đặt Hàng (${formatCurrency(finalTotal)})`}</span>
+              <ArrowRight className="w-4 h-4" />
+            </motion.button>
+          </div>
         </div>
+
       </form>
 
-      {/* VNPay Simulator Modal */}
-      {showVNPayModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-white border-3 border-black p-8 max-w-md w-full shadow-[10px_10px_0px_#00ff66] text-center space-y-6">
-            <div className="flex items-center justify-between pb-3 border-b-2 border-black">
-              <span className="font-display font-black text-lg text-blue-600">VNPay Gateway Sandbox</span>
-              <span className="text-xs font-mono font-bold bg-neutral-100 px-2 py-1 border border-black">05:00</span>
-            </div>
-
-            <div className="p-4 bg-neutral-50 border-2 border-black inline-block shadow-[4px_4px_0px_#000]">
-              {/* Simulated QR Image */}
-              <img
-                src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=VNPAY_SIMULATOR_ORDER_FASHION"
-                alt="VNPay QR"
-                className="w-48 h-48 mx-auto"
-              />
-              <span className="text-[10px] font-mono text-neutral-500 mt-2 block font-bold">
-                MÃ ĐƠN: ORD-FMS-{Date.now().toString().slice(-4)}
-              </span>
-            </div>
-
-            <div className="space-y-1">
-              <span className="text-xs text-neutral-500 font-medium">Số tiền thanh toán:</span>
-              <div className="font-display font-black text-2xl text-[#ff4d00]">
-                {formatCurrency(finalTotal)}
-              </div>
-              <p className="text-xs text-neutral-600">
-                Mở ứng dụng Mobile Banking của bạn để quét mã QR và xác nhận thanh toán.
-              </p>
-            </div>
-
-            <div className="space-y-2 pt-2">
-              <button
-                onClick={handleVNPayPaymentSuccess}
-                className="w-full py-3 neo-btn neo-btn-neon text-xs tracking-wider"
-              >
-                Giả Lập Thanh Toán Thành Công (Demo)
-              </button>
-              <button
-                onClick={() => setShowVNPayModal(false)}
-                className="w-full py-2.5 neo-btn neo-btn-secondary text-xs"
-              >
-                Hủy Giao Dịch
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

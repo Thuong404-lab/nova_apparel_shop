@@ -41,12 +41,29 @@ const SubNavigation = () => {
   
   if (location.pathname.startsWith('/staff')) {
     return (
-      <div className="bg-neutral-900 text-white border-b-2 border-black py-2.5 px-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between text-xs font-display font-bold">
-          <span className="text-[#00ff66] uppercase">CỔNG NHÂN VIÊN (STAFF)</span>
-          <div className="flex gap-4">
-            <Link to="/staff" className="hover:text-[#00ff66] transition-colors">Xử Lý Đơn Hàng & In Bill</Link>
-            <Link to="/staff/warehouse" className="hover:text-[#00ff66] transition-colors">Quản Lý Tồn Kho & Nhập Hàng</Link>
+      <div className="bg-zinc-900 text-white border-b border-zinc-800 py-3 px-4 sticky top-20 z-40 backdrop-blur-md">
+        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3 text-xs font-semibold">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <span className="text-emerald-400 uppercase tracking-wider font-mono">STAFF PORTAL</span>
+          </div>
+          <div className="flex gap-2">
+            <Link 
+              to="/staff" 
+              className={`px-3.5 py-1.5 rounded-xl transition-colors ${
+                location.pathname === '/staff' ? 'bg-white text-zinc-950 font-bold' : 'text-zinc-400 hover:text-white hover:bg-zinc-800'
+              }`}
+            >
+              Xử Lý Đơn Hàng & In Bill
+            </Link>
+            <Link 
+              to="/staff/warehouse" 
+              className={`px-3.5 py-1.5 rounded-xl transition-colors ${
+                location.pathname === '/staff/warehouse' ? 'bg-white text-zinc-950 font-bold' : 'text-zinc-400 hover:text-white hover:bg-zinc-800'
+              }`}
+            >
+              Quản Lý Tồn Kho & Nhập Hàng
+            </Link>
           </div>
         </div>
       </div>
@@ -55,13 +72,37 @@ const SubNavigation = () => {
 
   if (location.pathname.startsWith('/admin')) {
     return (
-      <div className="bg-neutral-950 text-white border-b-2 border-black py-2.5 px-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between text-xs font-display font-bold">
-          <span className="text-purple-400 uppercase">BẢNG QUẢN TRỊ (ADMIN)</span>
-          <div className="flex gap-4">
-            <Link to="/admin" className="hover:text-purple-400 transition-colors">Thống Kê Doanh Thu</Link>
-            <Link to="/admin/products" className="hover:text-purple-400 transition-colors">Quản Lý Sản Phẩm</Link>
-            <Link to="/admin/accounts" className="hover:text-purple-400 transition-colors">Quản Lý Tài Khoản</Link>
+      <div className="bg-zinc-950 text-white border-b border-zinc-800 py-3 px-4 sticky top-20 z-40 backdrop-blur-md">
+        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3 text-xs font-semibold">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-purple-400"></span>
+            <span className="text-purple-400 uppercase tracking-wider font-mono">ADMIN CONTROL CENTER</span>
+          </div>
+          <div className="flex gap-2">
+            <Link 
+              to="/admin" 
+              className={`px-3.5 py-1.5 rounded-xl transition-colors ${
+                location.pathname === '/admin' ? 'bg-white text-zinc-950 font-bold' : 'text-zinc-400 hover:text-white hover:bg-zinc-800'
+              }`}
+            >
+              Thống Kê Doanh Thu
+            </Link>
+            <Link 
+              to="/admin/products" 
+              className={`px-3.5 py-1.5 rounded-xl transition-colors ${
+                location.pathname === '/admin/products' ? 'bg-white text-zinc-950 font-bold' : 'text-zinc-400 hover:text-white hover:bg-zinc-800'
+              }`}
+            >
+              Quản Lý Sản Phẩm
+            </Link>
+            <Link 
+              to="/admin/accounts" 
+              className={`px-3.5 py-1.5 rounded-xl transition-colors ${
+                location.pathname === '/admin/accounts' ? 'bg-white text-zinc-950 font-bold' : 'text-zinc-400 hover:text-white hover:bg-zinc-800'
+              }`}
+            >
+              Quản Lý Tài Khoản
+            </Link>
           </div>
         </div>
       </div>
@@ -78,7 +119,7 @@ export default function App() {
         <CartProvider>
           <WishlistProvider>
             <BrowserRouter>
-              <div className="min-h-screen flex flex-col bg-[#f8f9fa] text-black">
+              <div className="min-h-screen flex flex-col bg-[#fafafa] text-zinc-900 selection:bg-emerald-500 selection:text-white font-sans antialiased">
                 
                 {/* Global Header */}
                 <Header />
