@@ -1,5 +1,7 @@
+﻿@import "tailwindcss";
+
 /* ==========================================================================
-   FASHION SYSTEM DESIGN TOKENS & GLOBAL STYLES (NEO-BRUTALISM + LUXURY STREETWEAR)
+   NOVA APPAREL DESIGN SYSTEM (NEO-BRUTALISM + LUXURY STREETWEAR)
    ========================================================================== */
 
 :root {
@@ -40,6 +42,14 @@ body {
 
 h1, h2, h3, h4, h5, h6, .font-display {
   font-family: var(--font-display);
+}
+
+/* Text outline utility */
+.text-stroke-black {
+  -webkit-text-stroke: 1.5px #000000;
+}
+.text-stroke-white {
+  -webkit-text-stroke: 1.5px #ffffff;
 }
 
 /* Custom Scrollbar */

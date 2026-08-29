@@ -1,7 +1,7 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+﻿import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useLocation, Link } from 'react-router-dom';
 import { ToastProvider } from './context/ToastContext';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
 
@@ -35,32 +35,41 @@ import { AdminDashboard } from './pages/admin/AdminDashboard';
 import { AdminProductsPage } from './pages/admin/AdminProductsPage';
 import { AdminAccountsPage } from './pages/admin/AdminAccountsPage';
 
-// Sub-nav for Staff
-const StaffNav = () => (
-  <div className="bg-neutral-900 text-white border-b-2 border-black py-2.5 px-4">
-    <div className="max-w-7xl mx-auto flex items-center justify-between text-xs font-display font-bold">
-      <span className="text-[#00ff66] uppercase">CỔNG NHÂN VIÊN (STAFF)</span>
-      <div className="flex gap-4">
-        <a href="/staff" className="hover:text-[#00ff66]">Xử Lý Đơn Hàng & Bill</a>
-        <a href="/staff/warehouse" className="hover:text-[#00ff66]">Quản Lý Tồn Kho & Nhập Hàng</a>
+// Sub-nav for Staff / Admin
+const SubNavigation = () => {
+  const location = useLocation();
+  
+  if (location.pathname.startsWith('/staff')) {
+    return (
+      <div className="bg-neutral-900 text-white border-b-2 border-black py-2.5 px-4">
+        <div className="max-w-7xl mx-auto flex items-center justify-between text-xs font-display font-bold">
+          <span className="text-[#00ff66] uppercase">CỔNG NHÂN VIÊN (STAFF)</span>
+          <div className="flex gap-4">
+            <Link to="/staff" className="hover:text-[#00ff66] transition-colors">Xử Lý Đơn Hàng & In Bill</Link>
+            <Link to="/staff/warehouse" className="hover:text-[#00ff66] transition-colors">Quản Lý Tồn Kho & Nhập Hàng</Link>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-);
+    );
+  }
 
-// Sub-nav for Admin
-const AdminNav = () => (
-  <div className="bg-neutral-950 text-white border-b-2 border-black py-2.5 px-4">
-    <div className="max-w-7xl mx-auto flex items-center justify-between text-xs font-display font-bold">
-      <span className="text-purple-400 uppercase">BẢNG QUẢN TRỊ (ADMIN)</span>
-      <div className="flex gap-4">
-        <a href="/admin" className="hover:text-purple-400">Thống Kê Doanh Thu</a>
-        <a href="/admin/products" className="hover:text-purple-400">Quản Lý Sản Phẩm</a>
-        <a href="/admin/accounts" className="hover:text-purple-400">Quản Lý Tài Khoản</a>
+  if (location.pathname.startsWith('/admin')) {
+    return (
+      <div className="bg-neutral-950 text-white border-b-2 border-black py-2.5 px-4">
+        <div className="max-w-7xl mx-auto flex items-center justify-between text-xs font-display font-bold">
+          <span className="text-purple-400 uppercase">BẢNG QUẢN TRỊ (ADMIN)</span>
+          <div className="flex gap-4">
+            <Link to="/admin" className="hover:text-purple-400 transition-colors">Thống Kê Doanh Thu</Link>
+            <Link to="/admin/products" className="hover:text-purple-400 transition-colors">Quản Lý Sản Phẩm</Link>
+            <Link to="/admin/accounts" className="hover:text-purple-400 transition-colors">Quản Lý Tài Khoản</Link>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-);
+    );
+  }
+
+  return null;
+};
 
 export default function App() {
   return (
@@ -76,10 +85,7 @@ export default function App() {
                 <CartDrawer />
 
                 {/* Sub-navbars when accessing Staff/Admin routes */}
-                <Routes>
-                  <Route path="/staff/*" element={<StaffNav />} />
-                  <Route path="/admin/*" element={<AdminNav />} />
-                </Routes>
+                <SubNavigation />
 
                 {/* Main Content Area */}
                 <main className="flex-1">
