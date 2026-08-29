@@ -1,4 +1,4 @@
-// Unified API Service Layer with Mock/Live Switching
+﻿// Unified API Service Layer with Mock/Live Switching
 
 import {
   mockProducts,
@@ -18,7 +18,7 @@ export const API_BASE_URL = 'http://localhost:8080/api';
 
 // Local storage keys
 const STORAGE_KEYS = {
-  PRODUCTS: 'fms_products',
+  PRODUCTS: 'nova_products_v2',
   ORDERS: 'fms_orders',
   CART: 'fms_cart',
   WISHLIST: 'fms_wishlist',
@@ -67,7 +67,7 @@ export const authApi = {
       const user = mockUsers.find(u => u.username === username.trim().toLowerCase()) || {
         id: 'CUST_' + Date.now(),
         username: username,
-        fullName: username === 'admin' ? 'Admin Manager' : username === 'staff' ? 'Staff Member' : 'Khách hàng ' + username,
+        fullName: username === 'admin' ? 'Admin Manager' : username === 'staff' ? 'Staff Member' : 'KhÃ¡ch hÃ ng ' + username,
         role: username.includes('admin') ? 'Admin' : username.includes('staff') ? 'Staff' : 'Customer',
         email: `${username}@gmail.com`,
         status: 'Active',
@@ -291,7 +291,7 @@ export const orderApi = {
       let orders = JSON.parse(localStorage.getItem(STORAGE_KEYS.ORDERS) || '[]');
       orders = orders.map(o => o.orderId === orderId ? { ...o, orderStatus: 'Cancelled' } : o);
       localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(orders));
-      return { success: true, message: 'Đã hủy đơn hàng thành công' };
+      return { success: true, message: 'ÄÃ£ há»§y Ä‘Æ¡n hÃ ng thÃ nh cÃ´ng' };
     }
     const res = await fetch(`${API_BASE_URL}/orders/${orderId}/cancel`, { method: 'PUT' });
     return res.json();
@@ -320,7 +320,7 @@ export const walletApi = {
         amount: Number(amount),
         status: 'Completed',
         method: 'VNPay',
-        description: 'Nạp tiền vào ví qua cổng thanh toán VNPay',
+        description: 'Náº¡p tiá»n vÃ o vÃ­ qua cá»•ng thanh toÃ¡n VNPay',
         createdAt: new Date().toISOString()
       });
       localStorage.setItem(STORAGE_KEYS.WALLET, JSON.stringify(wallet));
@@ -352,7 +352,7 @@ export const staffApi = {
       let orders = JSON.parse(localStorage.getItem(STORAGE_KEYS.ORDERS) || '[]');
       orders = orders.map(o => o.orderId === orderId ? { ...o, orderStatus: newStatus } : o);
       localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(orders));
-      return { success: true, message: `Đã cập nhật trạng thái đơn sang ${newStatus}` };
+      return { success: true, message: `ÄÃ£ cáº­p nháº­t tráº¡ng thÃ¡i Ä‘Æ¡n sang ${newStatus}` };
     }
     const res = await fetch(`${API_BASE_URL}/staff/orders/${orderId}/status`, {
       method: 'PUT',
@@ -375,7 +375,7 @@ export const staffApi = {
         }
       }
       localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(products));
-      return { success: true, message: 'Đã nhập kho thành công' };
+      return { success: true, message: 'ÄÃ£ nháº­p kho thÃ nh cÃ´ng' };
     }
     const res = await fetch(`${API_BASE_URL}/staff/warehouse/import`, {
       method: 'POST',
@@ -413,7 +413,7 @@ export const adminApi = {
         });
       }
       localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(products));
-      return { success: true, message: 'Đã lưu sản phẩm thành công' };
+      return { success: true, message: 'ÄÃ£ lÆ°u sáº£n pháº©m thÃ nh cÃ´ng' };
     }
     const res = await fetch(`${API_BASE_URL}/admin/products`, {
       method: 'POST',
@@ -429,7 +429,7 @@ export const adminApi = {
       let products = JSON.parse(localStorage.getItem(STORAGE_KEYS.PRODUCTS) || '[]');
       products = products.filter(p => p.productId !== productId);
       localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(products));
-      return { success: true, message: 'Đã xóa sản phẩm' };
+      return { success: true, message: 'ÄÃ£ xÃ³a sáº£n pháº©m' };
     }
     const res = await fetch(`${API_BASE_URL}/admin/products/${productId}`, { method: 'DELETE' });
     return res.json();

@@ -1,6 +1,6 @@
-﻿import React from 'react';
+﻿import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, ShoppingBag, Eye, Star } from 'lucide-react';
+import { Heart, ShoppingBag, Eye, Star, Sparkles } from 'lucide-react';
 import { useWishlist } from '../../context/WishlistContext';
 import { useCart } from '../../context/CartContext';
 import { formatCurrency } from '../../utils/formatters';
@@ -8,6 +8,7 @@ import { formatCurrency } from '../../utils/formatters';
 export const ProductCard = ({ product, onQuickView }) => {
   const { isInWishlist, toggleWishlist } = useWishlist();
   const { addToCart } = useCart();
+  const [selectedColorIndex, setSelectedColorIndex] = useState(0);
 
   const isFavorited = isInWishlist(product.productId);
 
@@ -15,16 +16,15 @@ export const ProductCard = ({ product, onQuickView }) => {
     e.preventDefault();
     e.stopPropagation();
     
-    // Pick first available variant
-    const firstVariant = product.variants?.[0] || {
+    const variant = product.variants?.[selectedColorIndex] || product.variants?.[0] || {
       variantId: `${product.productId}-DEFAULT`,
       productId: product.productId,
-      sizeId: 'SZ002',
-      colorId: 'COL001',
+      sizeName: 'M',
+      colorName: 'Đen (Obsidian)',
       stockQty: 10,
     };
 
-    addToCart(product, firstVariant, 1);
+    addToCart(product, variant, 1);
   };
 
   const handleToggleWishlist = (e) => {
@@ -48,62 +48,69 @@ export const ProductCard = ({ product, onQuickView }) => {
   const secondaryImage = product.images?.[1]?.imageUrl || primaryImage;
 
   return (
-    <div className="group relative flex flex-col bg-white rounded-2xl border border-zinc-200/80 overflow-hidden hover:border-zinc-300 hover:shadow-lg transition-all duration-300">
+    <div className="group relative flex flex-col bg-white rounded-3xl border border-zinc-200/80 overflow-hidden hover:border-zinc-300 hover:shadow-xl transition-all duration-500 ease-out">
       
-      {/* 1. Image Container */}
+      {/* 1. Image Container with Smooth Zoom & Secondary Crossfade */}
       <div className="relative aspect-[3/4] w-full bg-zinc-100 overflow-hidden">
         <Link to={`/product/${product.productId}`}>
           <img
             src={primaryImage}
             alt={product.name}
-            className="h-full w-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
+            className="h-full w-full object-cover object-center group-hover:scale-108 transition-transform duration-700 ease-out"
             loading="lazy"
           />
           {secondaryImage !== primaryImage && (
             <img
               src={secondaryImage}
               alt={product.name}
-              className="absolute inset-0 h-full w-full object-cover object-center opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+              className="absolute inset-0 h-full w-full object-cover object-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-out"
               loading="lazy"
             />
           )}
         </Link>
 
         {/* Top Badges */}
-        <div className="absolute top-3 left-3 flex flex-col gap-1.5">
-          {product.categoryName && (
-            <span className="px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider bg-white/90 backdrop-blur-md text-zinc-900 rounded-md shadow-sm">
-              {product.categoryName}
+        <div className="absolute top-3.5 left-3.5 flex flex-col gap-1.5 z-10 pointer-events-none">
+          {product.tag && (
+            <span className={`px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full shadow-sm backdrop-blur-md ${
+              product.tag === 'HOT DROP' 
+                ? 'bg-rose-500 text-white' 
+                : product.tag === 'BESTSELLER' 
+                ? 'bg-zinc-950 text-white' 
+                : 'bg-emerald-500 text-white'
+            }`}>
+              {product.tag}
             </span>
           )}
         </div>
 
-        {/* Floating Wishlist Button */}
+        {/* Floating Heart Wishlist Button */}
         <button
           onClick={handleToggleWishlist}
           aria-label="Thêm vào yêu thích"
-          className={`absolute top-3 right-3 p-2 rounded-full backdrop-blur-md transition-all ${
+          className={`absolute top-3.5 right-3.5 p-2.5 rounded-full backdrop-blur-md transition-all duration-300 z-10 ${
             isFavorited 
-              ? 'bg-rose-50 text-rose-500 shadow-sm' 
-              : 'bg-white/80 text-zinc-600 hover:bg-white hover:text-black shadow-sm'
+              ? 'bg-rose-50 text-rose-500 scale-110 shadow-md' 
+              : 'bg-white/80 text-zinc-700 hover:bg-white hover:text-black hover:scale-110 shadow-sm'
           }`}
         >
-          <Heart className={`w-4 h-4 ${isFavorited ? 'fill-rose-500' : ''}`} />
+          <Heart className={`w-4 h-4 transition-transform active:scale-125 ${isFavorited ? 'fill-rose-500' : ''}`} />
         </button>
 
-        {/* Quick View Button on Hover */}
-        <div className="absolute inset-x-3 bottom-3 flex gap-2 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+        {/* Quick Action Overlay Buttons */}
+        <div className="absolute inset-x-3.5 bottom-3.5 flex gap-2 opacity-0 translate-y-3 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 ease-out z-10">
           <button
             onClick={handleQuickViewClick}
-            className="flex-1 py-2.5 bg-white/95 backdrop-blur-md hover:bg-white text-zinc-900 text-xs font-semibold rounded-xl shadow-md flex items-center justify-center gap-1.5 transition-colors"
+            className="flex-1 py-2.5 bg-white/95 backdrop-blur-md hover:bg-white text-zinc-900 text-xs font-semibold rounded-2xl shadow-lg flex items-center justify-center gap-1.5 transition-all hover:scale-[1.02] active:scale-[0.98]"
           >
-            <Eye className="w-3.5 h-3.5" />
+            <Eye className="w-3.5 h-3.5 text-zinc-600" />
             <span>Xem Nhanh</span>
           </button>
+          
           <button
             onClick={handleAddToCart}
             aria-label="Thêm vào giỏ"
-            className="p-2.5 bg-zinc-950 hover:bg-zinc-800 text-white rounded-xl shadow-md transition-colors"
+            className="p-2.5 bg-zinc-950 hover:bg-zinc-800 text-white rounded-2xl shadow-lg transition-all hover:scale-[1.05] active:scale-[0.95] flex items-center justify-center"
           >
             <ShoppingBag className="w-4 h-4" />
           </button>
@@ -111,12 +118,18 @@ export const ProductCard = ({ product, onQuickView }) => {
       </div>
 
       {/* 2. Product Details */}
-      <div className="p-4 flex flex-col flex-1 justify-between gap-3">
+      <div className="p-5 flex flex-col flex-1 justify-between gap-3">
         <div>
-          <div className="flex items-center gap-1 text-amber-500 text-xs mb-1">
-            <Star className="w-3.5 h-3.5 fill-amber-400" />
-            <span className="font-semibold text-zinc-800">4.9</span>
-            <span className="text-zinc-400 text-[11px]">(48)</span>
+          {/* Rating and Reviews */}
+          <div className="flex items-center justify-between mb-1.5 text-xs">
+            <span className="text-[11px] font-medium uppercase tracking-wider text-zinc-400">
+              {product.categoryName}
+            </span>
+            <div className="flex items-center gap-1 text-amber-500">
+              <Star className="w-3.5 h-3.5 fill-amber-400" />
+              <span className="font-semibold text-zinc-800 text-xs">{product.rating || 4.9}</span>
+              <span className="text-zinc-400 text-[10px]">({product.reviewCount || 48})</span>
+            </div>
           </div>
 
           <Link to={`/product/${product.productId}`}>
@@ -126,16 +139,25 @@ export const ProductCard = ({ product, onQuickView }) => {
           </Link>
         </div>
 
-        <div className="flex items-baseline justify-between pt-1 border-t border-zinc-100">
+        {/* Variants Color Swatches & Price */}
+        <div className="flex items-end justify-between pt-2 border-t border-zinc-100">
           <div>
-            <span className="text-xs text-zinc-400 block font-mono">Giá niêm yết</span>
+            <span className="text-[11px] text-zinc-400 block font-mono">Giá niêm yết</span>
             <span className="font-display font-bold text-base text-zinc-950">
               {formatCurrency(product.basePrice)}
             </span>
           </div>
 
-          <div className="flex items-center gap-1 text-[11px] font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
-            <span>Sẵn hàng</span>
+          {/* Color Preview Dots */}
+          <div className="flex items-center gap-1">
+            {product.variants?.slice(0, 3).map((v, i) => (
+              <span
+                key={v.variantId || i}
+                title={v.colorName}
+                className="w-3 h-3 rounded-full border border-zinc-300 shadow-2xs"
+                style={{ backgroundColor: v.hexCode || (i === 0 ? '#09090b' : '#ffffff') }}
+              />
+            ))}
           </div>
         </div>
       </div>
