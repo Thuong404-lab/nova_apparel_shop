@@ -3,36 +3,37 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { 
   ShoppingBag, 
   Heart, 
-  User, 
   Search, 
+  User, 
+  ChevronDown, 
   Menu, 
   X, 
-  Wallet, 
   ShieldCheck, 
-  LogOut, 
-  Package,
+  Sparkles,
   Layers,
-  ChevronDown,
-  Sparkles
+  LogOut,
+  Wallet,
+  Package,
+  SlidersHorizontal,
+  ChevronRight
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
+import { NotificationDropdown } from './NotificationDropdown';
 
 export const Header = () => {
-  const { user, role, logout, switchDemoRole } = useAuth();
-  const { getCartCount, setIsCartOpen } = useCart();
-  const { wishlist } = useWishlist();
+  const { user, logout, switchDemoRole, isStaff, isAdmin } = useAuth();
+  const { totalItems, setIsCartOpen } = useCart();
+  const { count: wishlistCount } = useWishlist();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isRoleDropdownOpen, setIsRoleDropdownOpen] = useState(false);
-
-  const cartCount = getCartCount();
-  const wishlistCount = wishlist.length;
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isCategoryMenuOpen, setIsCategoryMenuOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -42,238 +43,336 @@ export const Header = () => {
     }
   };
 
-  const navLinks = [
-    { name: 'Trang Chủ', path: '/' },
-    { name: 'Bộ Sưu Tập', path: '/catalog' },
-    { name: 'Áo (Tops)', path: '/catalog?category=CAT001' },
-    { name: 'Áo Khoác (Outerwear)', path: '/catalog?category=CAT002' },
-    { name: 'Quần & Jeans', path: '/catalog?category=CAT003' },
-    { name: 'Phụ Kiện', path: '/catalog?category=CAT005' },
+  const categories = [
+    { id: 'CAT001', name: 'Áo Thun & Graphic Tees', count: '18 mẫu' },
+    { id: 'CAT002', name: 'Áo Khoác Biker & Bomber', count: '12 mẫu' },
+    { id: 'CAT003', name: 'Quần Cargo & Jeans Baggy', count: '15 mẫu' },
+    { id: 'CAT004', name: 'Đầm Bodycon & Chân Váy', count: '9 mẫu' },
+    { id: 'CAT005', name: 'Mũ & Phụ Kiện Đường Phố', count: '24 mẫu' },
   ];
 
   return (
-    <>
-      {/* 1. Top Announcement Bar */}
-      <div className="bg-zinc-950 text-white text-xs font-medium py-2 px-4 border-b border-zinc-800 overflow-hidden">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2 overflow-hidden">
-            <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span className="font-mono text-[11px] text-zinc-300 tracking-wide uppercase">
-              NOVA 2026 RUNWAY DROP // MIỄN PHÍ VẬN CHUYỂN TOÀN QUỐC CHO ĐƠN TỪ 500K
-            </span>
-          </div>
-
-          {/* Quick Demo Switcher */}
-          <div className="relative">
-            <button
-              onClick={() => setIsRoleDropdownOpen(!isRoleDropdownOpen)}
-              className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-[11px] font-medium transition-colors"
-            >
-              <Sparkles className="w-3 h-3 text-emerald-400" />
-              <span>Demo: <strong className="text-white capitalize">{role}</strong></span>
-              <ChevronDown className="w-3 h-3 text-zinc-400" />
-            </button>
-
-            {isRoleDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-52 bg-white text-zinc-900 rounded-xl shadow-xl border border-zinc-100 py-1.5 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
-                <div className="px-3 py-1.5 text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">
-                  Chuyển Vai Trò Test
-                </div>
-                <button
-                  onClick={() => { switchDemoRole('customer'); setIsRoleDropdownOpen(false); }}
-                  className="w-full px-3 py-2 text-left text-xs font-medium hover:bg-zinc-50 flex items-center justify-between"
-                >
-                  <span>Khách Hàng (Customer)</span>
-                  {role === 'customer' && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>}
-                </button>
-                <button
-                  onClick={() => { switchDemoRole('staff'); setIsRoleDropdownOpen(false); }}
-                  className="w-full px-3 py-2 text-left text-xs font-medium hover:bg-zinc-50 flex items-center justify-between"
-                >
-                  <span>Nhân Viên (Staff)</span>
-                  {role === 'staff' && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>}
-                </button>
-                <button
-                  onClick={() => { switchDemoRole('admin'); setIsRoleDropdownOpen(false); }}
-                  className="w-full px-3 py-2 text-left text-xs font-medium hover:bg-zinc-50 flex items-center justify-between"
-                >
-                  <span>Quản Trị Viên (Admin)</span>
-                  {role === 'admin' && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>}
-                </button>
-              </div>
-            )}
-          </div>
+    <header className="sticky top-0 z-40 w-full bg-white/90 backdrop-blur-md border-b border-zinc-200/80 transition-all duration-200">
+      
+      {/* Top micro announcement bar */}
+      <div className="bg-zinc-950 text-white text-[11px] font-mono py-1.5 px-4 text-center border-b border-zinc-900 flex items-center justify-between">
+        <div className="hidden sm:flex items-center gap-4 text-zinc-400">
+          <span>Hà Nội: 12 Hai Bà Trưng</span>
+          <span>•</span>
+          <span>Hotline: 1900 8888</span>
+        </div>
+        <div className="mx-auto sm:mx-0 flex items-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+          <span className="text-zinc-200">BST XUÂN HÈ 2026 // MIỄN PHÍ VẬN CHUYỂN TỪ 500K</span>
+        </div>
+        <div className="hidden md:flex items-center gap-3 text-zinc-400">
+          <Link to="/orders" className="hover:text-white transition-colors">Tra cứu đơn hàng</Link>
         </div>
       </div>
 
-      {/* 2. Main Luxury Sticky Header */}
-      <header className="sticky top-0 z-40 glass-header">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20">
-            
-            {/* Left: Mobile Menu Toggle & Brand Logo */}
-            <div className="flex items-center gap-4">
-              <button 
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="lg:hidden p-2 text-zinc-700 hover:text-black rounded-lg hover:bg-zinc-100"
+      {/* Main Header Container */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-6">
+        
+        {/* 1. Left: Brand Logo */}
+        <div className="flex items-center gap-8">
+          <Link to="/" className="flex items-center gap-2 group select-none">
+            <span className="font-display font-black text-2xl tracking-tighter text-zinc-950 group-hover:text-emerald-600 transition-colors">
+              NOVA<span className="text-emerald-500">.</span>
+            </span>
+            <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-md bg-zinc-100 text-zinc-600 font-bold border border-zinc-200">
+              APPAREL
+            </span>
+          </Link>
+
+          {/* Clean Main Navigation Menu */}
+          <nav className="hidden lg:flex items-center gap-7 text-xs font-semibold text-zinc-700">
+            <Link 
+              to="/" 
+              className={`hover:text-black transition-colors ${location.pathname === '/' ? 'text-black font-bold' : ''}`}
+            >
+              Trang Chủ
+            </Link>
+
+            {/* Category Dropdown on Hover */}
+            <div 
+              className="relative py-4"
+              onMouseEnter={() => setIsCategoryMenuOpen(true)}
+              onMouseLeave={() => setIsCategoryMenuOpen(false)}
+            >
+              <Link 
+                to="/catalog" 
+                className={`flex items-center gap-1 hover:text-black transition-colors ${
+                  location.pathname.startsWith('/catalog') ? 'text-black font-bold' : ''
+                }`}
               >
-                {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-              </button>
-
-              <Link to="/" className="flex items-center gap-2 group">
-                <span className="font-display font-black text-2xl tracking-tighter text-zinc-950 group-hover:opacity-80 transition-opacity">
-                  NOVA<span className="text-emerald-500">.</span>
-                </span>
-                <span className="hidden sm:inline-block px-2 py-0.5 text-[10px] font-semibold tracking-widest uppercase bg-zinc-100 text-zinc-600 rounded-md border border-zinc-200">
-                  APPAREL
-                </span>
+                <span>Bộ Sưu Tập</span>
+                <ChevronDown className="w-3.5 h-3.5 text-zinc-400" />
               </Link>
-            </div>
 
-            {/* Middle: Desktop Navigation */}
-            <nav className="hidden lg:flex items-center gap-8">
-              {navLinks.map((link) => {
-                const isActive = location.pathname === link.path;
-                return (
-                  <Link
-                    key={link.path}
-                    to={link.path}
-                    className={`text-sm font-medium transition-colors hover:text-black ${
-                      isActive ? 'text-black font-semibold' : 'text-zinc-600'
-                    }`}
-                  >
-                    {link.name}
-                  </Link>
-                );
-              })}
-            </nav>
-
-            {/* Right: Actions (Search, Wishlist, Cart, Profile) */}
-            <div className="flex items-center gap-3 sm:gap-4">
-              
-              {/* Search Bar / Button */}
-              <div className="relative">
-                {isSearchOpen ? (
-                  <form onSubmit={handleSearchSubmit} className="flex items-center">
-                    <input
-                      type="text"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Tìm áo khoác, hoodie, quần..."
-                      className="w-48 sm:w-64 pl-3 pr-8 py-1.5 text-xs bg-zinc-100 border border-zinc-300 rounded-full focus:outline-none focus:ring-2 focus:ring-black focus:bg-white transition-all"
-                      autoFocus
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setIsSearchOpen(false)}
-                      className="absolute right-2 text-zinc-400 hover:text-zinc-700"
+              {/* Category Popover */}
+              {isCategoryMenuOpen && (
+                <div className="absolute top-full left-0 w-64 bg-white rounded-2xl shadow-xl border border-zinc-200/80 p-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+                  <div className="p-2 border-b border-zinc-100 text-[11px] font-bold uppercase tracking-wider text-zinc-400">
+                    Phân Loại Danh Mục
+                  </div>
+                  {categories.map((cat) => (
+                    <Link
+                      key={cat.id}
+                      to={`/catalog?category=${cat.id}`}
+                      onClick={() => setIsCategoryMenuOpen(false)}
+                      className="flex items-center justify-between p-2.5 rounded-xl hover:bg-zinc-50 text-xs font-medium text-zinc-700 hover:text-black transition-colors"
                     >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </form>
-                ) : (
-                  <button
-                    onClick={() => setIsSearchOpen(true)}
-                    className="p-2 text-zinc-600 hover:text-black rounded-full hover:bg-zinc-100 transition-colors"
-                    title="Tìm kiếm"
-                  >
-                    <Search className="w-5 h-5" />
-                  </button>
-                )}
-              </div>
-
-              {/* Wishlist Button */}
-              <Link
-                to="/wishlist"
-                className="relative p-2 text-zinc-600 hover:text-black rounded-full hover:bg-zinc-100 transition-colors"
-                title="Yêu thích"
-              >
-                <Heart className="w-5 h-5" />
-                {wishlistCount > 0 && (
-                  <span className="absolute top-1 right-1 w-4 h-4 bg-rose-500 text-white rounded-full text-[10px] font-bold flex items-center justify-center">
-                    {wishlistCount}
-                  </span>
-                )}
-              </Link>
-
-              {/* Cart Drawer Button */}
-              <button
-                onClick={() => setIsCartOpen(true)}
-                className="relative flex items-center gap-2 px-3.5 py-2 bg-zinc-950 hover:bg-zinc-800 text-white rounded-full transition-all text-xs font-semibold shadow-sm"
-              >
-                <ShoppingBag className="w-4 h-4" />
-                <span className="hidden sm:inline">Giỏ Hàng</span>
-                <span className="px-1.5 py-0.2 bg-emerald-400 text-zinc-950 rounded-full text-[11px] font-bold">
-                  {cartCount}
-                </span>
-              </button>
-
-              {/* User Account / Dropdown */}
-              {user ? (
-                <div className="flex items-center gap-2 pl-2 border-l border-zinc-200">
-                  <Link to="/profile" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-                    <img 
-                      src={user.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'} 
-                      alt={user.fullName}
-                      className="w-8 h-8 rounded-full object-cover border border-zinc-300"
-                    />
-                    <div className="hidden xl:block text-left text-xs">
-                      <p className="font-semibold text-zinc-900 truncate max-w-[100px]">{user.fullName}</p>
-                      <p className="text-[10px] text-zinc-500 capitalize">{role}</p>
-                    </div>
-                  </Link>
+                      <span>{cat.name}</span>
+                      <span className="text-[10px] text-zinc-400 font-mono">{cat.count}</span>
+                    </Link>
+                  ))}
+                  <div className="p-2 border-t border-zinc-100">
+                    <Link
+                      to="/catalog"
+                      onClick={() => setIsCategoryMenuOpen(false)}
+                      className="text-[11px] font-bold text-emerald-600 hover:underline flex items-center justify-between"
+                    >
+                      <span>Xem Tất Cả Sản Phẩm</span>
+                      <ChevronRight className="w-3 h-3" />
+                    </Link>
+                  </div>
                 </div>
-              ) : (
-                <Link
-                  to="/login"
-                  className="p-2 text-zinc-600 hover:text-black rounded-full hover:bg-zinc-100 transition-colors"
-                  title="Đăng nhập"
-                >
-                  <User className="w-5 h-5" />
-                </Link>
               )}
-
             </div>
-          </div>
+
+            <Link 
+              to="/orders" 
+              className={`hover:text-black transition-colors ${location.pathname.startsWith('/orders') ? 'text-black font-bold' : ''}`}
+            >
+              Tra Cứu Đơn Hàng
+            </Link>
+
+            <Link 
+              to="/wallet" 
+              className={`hover:text-black transition-colors ${location.pathname.startsWith('/wallet') ? 'text-black font-bold' : ''}`}
+            >
+              Ví Nova Wallet
+            </Link>
+          </nav>
         </div>
 
-        {/* Mobile Navigation Drawer */}
-        {isMobileMenuOpen && (
-          <div className="lg:hidden bg-white border-b border-zinc-200 px-6 py-6 space-y-4 animate-in slide-in-from-top-4 duration-200">
-            <div className="space-y-1">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="block py-2.5 text-base font-medium text-zinc-800 hover:text-black border-b border-zinc-50"
+        {/* 2. Right: Action Buttons */}
+        <div className="flex items-center gap-3">
+          
+          {/* Search Trigger */}
+          <div className="relative">
+            {isSearchOpen ? (
+              <form onSubmit={handleSearchSubmit} className="flex items-center">
+                <input
+                  type="text"
+                  placeholder="Tìm sản phẩm, áo thun, jacket..."
+                  autoFocus
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-48 sm:w-64 bg-zinc-100 border border-zinc-300 text-xs rounded-full px-4 py-2 outline-none focus:border-zinc-950"
+                />
+                <button 
+                  type="button" 
+                  onClick={() => setIsSearchOpen(false)}
+                  className="p-2 text-zinc-400 hover:text-black"
                 >
-                  {link.name}
-                </Link>
-              ))}
-            </div>
-
-            <div className="pt-4 border-t border-zinc-200 flex flex-col gap-2.5">
-              <Link
-                to="/wallet"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center gap-2.5 py-2 text-sm text-zinc-700 font-medium"
+                  <X className="w-4 h-4" />
+                </button>
+              </form>
+            ) : (
+              <button
+                onClick={() => setIsSearchOpen(true)}
+                className="p-2.5 rounded-full hover:bg-zinc-100 text-zinc-700 hover:text-black transition-colors cursor-pointer"
+                aria-label="Tìm kiếm"
               >
-                <Wallet className="w-4 h-4 text-emerald-600" />
-                <span>Ví Điện Tử Nova Wallet</span>
-              </Link>
-              <Link
-                to="/orders"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center gap-2.5 py-2 text-sm text-zinc-700 font-medium"
-              >
-                <Package className="w-4 h-4 text-blue-600" />
-                <span>Lịch Sử Đơn Hàng</span>
-              </Link>
-            </div>
+                <Search className="w-4 h-4" />
+              </button>
+            )}
           </div>
-        )}
-      </header>
-    </>
+
+          {/* Notification Center */}
+          <NotificationDropdown />
+
+          {/* Wishlist Link */}
+          <Link
+            to="/wishlist"
+            className="relative p-2.5 rounded-full hover:bg-zinc-100 text-zinc-700 hover:text-black transition-colors"
+            aria-label="Yêu thích"
+          >
+            <Heart className="w-4 h-4" />
+            {wishlistCount > 0 && (
+              <span className="absolute top-1 right-1 w-4 h-4 bg-rose-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center font-mono">
+                {wishlistCount}
+              </span>
+            )}
+          </Link>
+
+          {/* Cart Button */}
+          <button
+            onClick={() => setIsCartOpen(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-zinc-950 hover:bg-zinc-800 text-white text-xs font-bold rounded-full shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+          >
+            <ShoppingBag className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Giỏ Hàng</span>
+            {totalItems > 0 && (
+              <span className="w-4 h-4 bg-emerald-400 text-zinc-950 rounded-full flex items-center justify-center text-[10px] font-mono">
+                {totalItems}
+              </span>
+            )}
+          </button>
+
+          {/* User Profile Menu */}
+          <div className="relative">
+            <button
+              onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+              className="flex items-center gap-2 p-1.5 rounded-full hover:bg-zinc-100 border border-zinc-200 transition-colors cursor-pointer"
+            >
+              <img
+                src={user?.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100'}
+                alt={user?.fullName || 'User'}
+                className="w-7 h-7 rounded-full object-cover"
+              />
+              <span className="text-xs font-semibold text-zinc-800 hidden md:inline max-w-[100px] truncate">
+                {user?.fullName?.split(' ').slice(-1)[0] || 'Tài khoản'}
+              </span>
+              <ChevronDown className="w-3 h-3 text-zinc-400" />
+            </button>
+
+            {/* User Dropdown */}
+            {isUserMenuOpen && (
+              <>
+                <div 
+                  className="fixed inset-0 z-40" 
+                  onClick={() => setIsUserMenuOpen(false)}
+                />
+                <div className="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-2xl border border-zinc-200/80 p-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+                  
+                  {/* User Profile Header */}
+                  <div className="p-3 border-b border-zinc-100 flex items-center gap-3">
+                    <img
+                      src={user?.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100'}
+                      alt=""
+                      className="w-10 h-10 rounded-full object-cover"
+                    />
+                    <div className="min-w-0">
+                      <p className="text-xs font-bold text-zinc-950 truncate">{user?.fullName || 'Khách Hàng'}</p>
+                      <span className="text-[10px] font-mono text-emerald-600 font-bold uppercase">
+                        {user?.role || 'Customer'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Navigation Links */}
+                  <div className="py-1">
+                    <Link
+                      to="/profile"
+                      onClick={() => setIsUserMenuOpen(false)}
+                      className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-zinc-50 text-xs text-zinc-700 font-medium"
+                    >
+                      <User className="w-4 h-4 text-zinc-400" />
+                      <span>Thông tin cá nhân</span>
+                    </Link>
+
+                    <Link
+                      to="/orders"
+                      onClick={() => setIsUserMenuOpen(false)}
+                      className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-zinc-50 text-xs text-zinc-700 font-medium"
+                    >
+                      <Package className="w-4 h-4 text-zinc-400" />
+                      <span>Đơn hàng của tôi</span>
+                    </Link>
+
+                    <Link
+                      to="/wallet"
+                      onClick={() => setIsUserMenuOpen(false)}
+                      className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-zinc-50 text-xs text-zinc-700 font-medium"
+                    >
+                      <Wallet className="w-4 h-4 text-emerald-600" />
+                      <span>Ví Nova Wallet</span>
+                    </Link>
+                  </div>
+
+                  {/* Role Switcher Demo */}
+                  <div className="p-2 border-t border-zinc-100 bg-zinc-50/70 rounded-xl my-1 space-y-1.5">
+                    <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block">
+                      Chuyển Vai Trò (Demo)
+                    </span>
+                    <div className="grid grid-cols-3 gap-1">
+                      <button
+                        onClick={() => { switchDemoRole('customer'); setIsUserMenuOpen(false); navigate('/'); }}
+                        className={`py-1 text-[10px] font-bold rounded-lg ${
+                          !isStaff && !isAdmin ? 'bg-zinc-950 text-white' : 'bg-white text-zinc-600 border border-zinc-200'
+                        }`}
+                      >
+                        Khách
+                      </button>
+                      <button
+                        onClick={() => { switchDemoRole('staff'); setIsUserMenuOpen(false); navigate('/staff'); }}
+                        className={`py-1 text-[10px] font-bold rounded-lg ${
+                          isStaff && !isAdmin ? 'bg-zinc-950 text-white' : 'bg-white text-zinc-600 border border-zinc-200'
+                        }`}
+                      >
+                        Staff
+                      </button>
+                      <button
+                        onClick={() => { switchDemoRole('admin'); setIsUserMenuOpen(false); navigate('/admin'); }}
+                        className={`py-1 text-[10px] font-bold rounded-lg ${
+                          isAdmin ? 'bg-purple-600 text-white' : 'bg-white text-zinc-600 border border-zinc-200'
+                        }`}
+                      >
+                        Admin
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Auth Actions */}
+                  <div className="pt-1 border-t border-zinc-100">
+                    <Link
+                      to="/login"
+                      onClick={() => setIsUserMenuOpen(false)}
+                      className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-zinc-50 text-xs text-zinc-700 font-medium"
+                    >
+                      <Layers className="w-4 h-4 text-zinc-400" />
+                      <span>Trang Đăng Nhập / Đăng Ký</span>
+                    </Link>
+                    <button
+                      onClick={() => { logout(); setIsUserMenuOpen(false); }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-rose-50 text-xs text-rose-600 font-medium cursor-pointer"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span>Đăng xuất</span>
+                    </button>
+                  </div>
+
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Mobile Hamburger Toggle */}
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="lg:hidden p-2 text-zinc-700"
+          >
+            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+
+        </div>
+
+      </div>
+
+      {/* Mobile Menu */}
+      {isMobileMenuOpen && (
+        <div className="lg:hidden border-t border-zinc-200 bg-white p-4 space-y-3">
+          <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="block py-2 text-sm font-semibold">Trang Chủ</Link>
+          <Link to="/catalog" onClick={() => setIsMobileMenuOpen(false)} className="block py-2 text-sm font-semibold">Bộ Sưu Tập</Link>
+          <Link to="/orders" onClick={() => setIsMobileMenuOpen(false)} className="block py-2 text-sm font-semibold">Tra Cứu Đơn Hàng</Link>
+          <Link to="/wallet" onClick={() => setIsMobileMenuOpen(false)} className="block py-2 text-sm font-semibold">Ví Nova Wallet</Link>
+          <Link to="/profile" onClick={() => setIsMobileMenuOpen(false)} className="block py-2 text-sm font-semibold">Tài Khoản</Link>
+          <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className="block py-2 text-sm font-semibold text-emerald-600">Đăng Nhập / Đăng Ký</Link>
+        </div>
+      )}
+
+    </header>
   );
 };

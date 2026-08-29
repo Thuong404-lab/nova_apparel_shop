@@ -1,147 +1,172 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Lock, User, ArrowRight, Shield, Zap } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Lock, User, ArrowRight, Sparkles, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 export const LoginPage = () => {
+  const { login, switchDemoRole } = useAuth();
+  const navigate = useNavigate();
+
   const [username, setUsername] = useState('nguyenvana');
   const [password, setPassword] = useState('123456');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
-  const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     const success = await login(username, password);
     setLoading(false);
     if (success) {
-      if (username.includes('admin')) {
-        navigate('/admin');
-      } else if (username.includes('staff')) {
-        navigate('/staff');
-      } else {
-        navigate('/');
-      }
+      navigate('/');
     }
   };
 
-  const handleQuickDemo = async (demoUser) => {
-    setUsername(demoUser);
-    setPassword('123456');
-    setLoading(true);
-    const success = await login(demoUser, '123456');
-    setLoading(false);
-    if (success) {
-      if (demoUser === 'admin') navigate('/admin');
-      else if (demoUser === 'staff01') navigate('/staff');
-      else navigate('/');
-    }
+  const handleQuickDemo = async (role) => {
+    await switchDemoRole(role);
+    if (role === 'admin') navigate('/admin');
+    else if (role === 'staff') navigate('/staff');
+    else navigate('/');
   };
 
   return (
-    <div className="max-w-md mx-auto px-4 py-16">
-      <div className="bg-white border-3 border-black p-8 shadow-[10px_10px_0px_#000] space-y-6">
+    <div className="min-h-[85vh] flex items-center justify-center p-4 sm:p-6 lg:p-8">
+      <div className="w-full max-w-5xl bg-white rounded-3xl border border-zinc-200/80 shadow-2xl overflow-hidden grid lg:grid-cols-12">
         
-        {/* Header */}
-        <div className="text-center space-y-2 pb-4 border-b-2 border-black">
-          <div className="w-12 h-12 bg-black text-[#00ff66] font-display font-black text-2xl flex items-center justify-center mx-auto border-2 border-black shadow-[3px_3px_0px_#000]">
-            FS
+        {/* Left: High-Fashion Editorial Banner (5 cols) */}
+        <div className="lg:col-span-5 relative bg-zinc-950 text-white p-8 sm:p-12 flex flex-col justify-between overflow-hidden hidden md:flex">
+          <div className="absolute inset-0 opacity-40">
+            <img
+              src="https://images.unsplash.com/photo-1509631179647-0177331693ae?w=800"
+              alt="Editorial"
+              className="w-full h-full object-cover filter grayscale contrast-125"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/60 to-transparent"></div>
           </div>
-          <h1 className="font-display font-black text-2xl uppercase tracking-tight">
-            ĐĂNG NHẬP HỆ THỐNG
-          </h1>
-          <span className="font-mono text-xs text-[#00ff66] uppercase tracking-widest block font-bold">
-            NOVA APPAREL // PORTAL 2026
-          </span>
-        </div>
 
-        {/* Quick Demo Role Switcher */}
-        <div className="p-3 bg-neutral-100 border-2 border-black space-y-2">
-          <span className="text-[10px] font-display font-black uppercase text-neutral-500 flex items-center gap-1">
-            <Zap className="w-3.5 h-3.5 text-[#ff4d00]" /> ĐĂNG NHẬP NHANH (DEMO TEST):
-          </span>
-          <div className="grid grid-cols-3 gap-1.5">
-            <button
-              type="button"
-              onClick={() => handleQuickDemo('admin')}
-              className="py-1.5 px-2 bg-purple-600 text-white font-display font-bold text-[10px] uppercase border border-black hover:bg-purple-700 shadow-[1px_1px_0px_#000]"
-            >
-              Admin
-            </button>
-            <button
-              type="button"
-              onClick={() => handleQuickDemo('staff01')}
-              className="py-1.5 px-2 bg-blue-600 text-white font-display font-bold text-[10px] uppercase border border-black hover:bg-blue-700 shadow-[1px_1px_0px_#000]"
-            >
-              Staff
-            </button>
-            <button
-              type="button"
-              onClick={() => handleQuickDemo('nguyenvana')}
-              className="py-1.5 px-2 bg-black text-[#00ff66] font-display font-bold text-[10px] uppercase border border-black hover:bg-neutral-800 shadow-[1px_1px_0px_#000]"
-            >
-              Khách Hàng
-            </button>
+          <div className="relative z-10 space-y-2">
+            <span className="font-display font-black text-2xl tracking-tighter text-white">
+              NOVA<span className="text-emerald-400">.</span> APPAREL
+            </span>
+            <p className="text-xs text-zinc-400 font-mono">SPRING / SUMMER 2026</p>
+          </div>
+
+          <div className="relative z-10 space-y-3">
+            <p className="text-xs font-bold uppercase tracking-widest text-emerald-400">
+              EXCLUSIVE MEMBERSHIP
+            </p>
+            <h2 className="font-display font-bold text-2xl text-white leading-snug">
+              Trải Nghiệm Mua Sắm Thời Trang Đỉnh Cao
+            </h2>
+            <p className="text-xs text-zinc-400 leading-relaxed">
+              Đăng nhập để tích lũy điểm thưởng Nova Pass, nhận mã giảm giá độc quyền và theo dõi đơn hàng thời gian thực.
+            </p>
           </div>
         </div>
 
-        {/* Login Form */}
-        <form onSubmit={handleLogin} className="space-y-4">
-          <div>
-            <label className="block text-xs font-display font-bold uppercase mb-1">
-              Tên Đăng Nhập
-            </label>
-            <div className="relative">
-              <input
-                type="text"
-                required
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Ví dụ: admin, staff01, nguyenvana"
-                className="neo-input text-xs pl-9"
-              />
-              <User className="w-4 h-4 absolute left-3 top-3.5 text-neutral-400" />
+        {/* Right: Login Form (7 cols) */}
+        <div className="lg:col-span-7 p-8 sm:p-12 flex flex-col justify-between space-y-8">
+          
+          <div className="space-y-6">
+            <div>
+              <span className="text-xs font-bold uppercase tracking-widest text-emerald-600 font-mono">
+                AUTHENTICATION
+              </span>
+              <h1 className="font-display font-black text-3xl text-zinc-950 mt-1">
+                Đăng Nhập Tài Khoản
+              </h1>
+              <p className="text-xs text-zinc-500 mt-1">
+                Chưa có tài khoản?{' '}
+                <Link to="/register" className="font-bold text-emerald-600 hover:underline">
+                  Đăng ký ngay
+                </Link>
+              </p>
             </div>
+
+            {/* Quick Demo Login Tabs */}
+            <div className="p-3 bg-zinc-50 rounded-2xl border border-zinc-200/80 space-y-2">
+              <span className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider block">
+                ⚡ Đăng Nhập Nhanh (1-Click Demo Roles)
+              </span>
+              <div className="grid grid-cols-3 gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleQuickDemo('customer')}
+                  className="py-2 px-3 rounded-xl bg-white border border-zinc-200 text-xs font-bold hover:border-zinc-950 transition-colors shadow-2xs cursor-pointer"
+                >
+                  Khách Hàng
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleQuickDemo('staff')}
+                  className="py-2 px-3 rounded-xl bg-white border border-zinc-200 text-xs font-bold hover:border-zinc-950 transition-colors shadow-2xs cursor-pointer"
+                >
+                  Nhân Viên
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleQuickDemo('admin')}
+                  className="py-2 px-3 rounded-xl bg-purple-50 border border-purple-200 text-purple-700 text-xs font-bold hover:bg-purple-100 transition-colors shadow-2xs cursor-pointer"
+                >
+                  Quản Trị Viên
+                </button>
+              </div>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-zinc-800">Tên đăng nhập hoặc Email</label>
+                <div className="relative">
+                  <User className="w-4 h-4 text-zinc-400 absolute left-3.5 top-3.5" />
+                  <input
+                    type="text"
+                    required
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="nguyenvana"
+                    className="w-full bg-zinc-50 border border-zinc-200 rounded-xl pl-10 pr-4 py-3 text-xs outline-none focus:border-zinc-950"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <div className="flex justify-between items-center text-xs">
+                  <label className="font-bold text-zinc-800">Mật khẩu</label>
+                  <Link to="/forgot-password" className="text-zinc-500 hover:text-black">
+                    Quên mật khẩu?
+                  </Link>
+                </div>
+                <div className="relative">
+                  <Lock className="w-4 h-4 text-zinc-400 absolute left-3.5 top-3.5" />
+                  <input
+                    type="password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full bg-zinc-50 border border-zinc-200 rounded-xl pl-10 pr-4 py-3 text-xs outline-none focus:border-zinc-950"
+                  />
+                </div>
+              </div>
+
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                type="submit"
+                disabled={loading}
+                className="w-full luxury-btn-accent text-xs py-3.5 justify-center shadow-lg shadow-emerald-500/20 cursor-pointer"
+              >
+                <span>{loading ? 'Đang Xử Lý...' : 'Đăng Nhập Vào Hệ Thống'}</span>
+                <ArrowRight className="w-4 h-4" />
+              </motion.button>
+            </form>
           </div>
 
-          <div>
-            <div className="flex justify-between items-center mb-1">
-              <label className="block text-xs font-display font-bold uppercase">
-                Mật Khẩu
-              </label>
-              <Link to="/forgot-password" className="text-[11px] font-mono text-neutral-500 hover:text-black underline">
-                Quên mật khẩu?
-              </Link>
-            </div>
-            <div className="relative">
-              <input
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Nhập 123456"
-                className="neo-input text-xs pl-9"
-              />
-              <Lock className="w-4 h-4 absolute left-3 top-3.5 text-neutral-400" />
-            </div>
+          <div className="pt-4 border-t border-zinc-100 text-center text-[11px] text-zinc-400 font-mono">
+            Bảo mật SSL 256-bit chuẩn thương mại điện tử quốc tế.
           </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3.5 neo-btn neo-btn-neon text-xs tracking-wider flex items-center justify-center gap-2"
-          >
-            {loading ? 'Đang Xử Lý...' : 'Đăng Nhập Ngay'} <ArrowRight className="w-4 h-4" />
-          </button>
-        </form>
-
-        {/* Footer */}
-        <div className="text-center pt-4 border-t border-neutral-200 text-xs">
-          <span className="text-neutral-500">Chưa có tài khoản? </span>
-          <Link to="/register" className="font-display font-bold uppercase hover:text-[#ff4d00] underline">
-            Đăng ký thành viên
-          </Link>
         </div>
 
       </div>

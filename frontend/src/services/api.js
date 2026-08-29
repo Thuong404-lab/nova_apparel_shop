@@ -236,7 +236,7 @@ export const orderApi = {
   getMyOrders: async () => {
     if (USE_MOCK_DATA) {
       await sleep(150);
-      const orders = JSON.parse(localStorage.getItem(STORAGE_KEYS.ORDERS) || '[]');
+      const raw = JSON.parse(localStorage.getItem(STORAGE_KEYS.ORDERS) || '[]'); const orders = (raw && raw.length > 0) ? raw : mockOrders;
       return { success: true, data: orders };
     }
     const res = await fetch(`${API_BASE_URL}/orders/my-orders`);
@@ -246,8 +246,8 @@ export const orderApi = {
   getById: async (orderId) => {
     if (USE_MOCK_DATA) {
       await sleep(100);
-      const orders = JSON.parse(localStorage.getItem(STORAGE_KEYS.ORDERS) || '[]');
-      const order = orders.find(o => o.orderId === orderId);
+      const raw = JSON.parse(localStorage.getItem(STORAGE_KEYS.ORDERS) || '[]'); const orders = (raw && raw.length > 0) ? raw : mockOrders;
+      const order = orders.find(o => o.orderId === orderId) || mockOrders.find(o => o.orderId === orderId);
       return { success: !!order, data: order };
     }
     const res = await fetch(`${API_BASE_URL}/orders/${orderId}`);
@@ -257,7 +257,7 @@ export const orderApi = {
   create: async (orderData) => {
     if (USE_MOCK_DATA) {
       await sleep(300);
-      const orders = JSON.parse(localStorage.getItem(STORAGE_KEYS.ORDERS) || '[]');
+      const raw = JSON.parse(localStorage.getItem(STORAGE_KEYS.ORDERS) || '[]'); const orders = (raw && raw.length > 0) ? raw : mockOrders;
       const newOrder = {
         orderId: 'ORD' + Math.floor(1000 + Math.random() * 9000),
         customerId: orderData.customerId || 'CUST001',
@@ -339,7 +339,7 @@ export const staffApi = {
   getAllOrders: async () => {
     if (USE_MOCK_DATA) {
       await sleep(150);
-      const orders = JSON.parse(localStorage.getItem(STORAGE_KEYS.ORDERS) || '[]');
+      const raw = JSON.parse(localStorage.getItem(STORAGE_KEYS.ORDERS) || '[]'); const orders = (raw && raw.length > 0) ? raw : mockOrders;
       return { success: true, data: orders };
     }
     const res = await fetch(`${API_BASE_URL}/staff/orders`);
