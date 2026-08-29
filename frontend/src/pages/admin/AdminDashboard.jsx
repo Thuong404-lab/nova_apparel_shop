@@ -21,7 +21,7 @@ export const AdminDashboard = () => {
     async function loadStats() {
       setLoading(true);
       try {
-        const res = await adminApi.getAnalytics();
+        const res = await adminApi.getStats();
         if (res.success) setStats(res.data);
       } finally {
         setLoading(false);
