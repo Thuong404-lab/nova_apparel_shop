@@ -1,0 +1,224 @@
+/* ==========================================================================
+   FASHION SYSTEM DESIGN TOKENS & GLOBAL STYLES (NEO-BRUTALISM + LUXURY STREETWEAR)
+   ========================================================================== */
+
+:root {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Space Grotesk', 'Syne', sans-serif;
+  
+  --color-brand-black: #0d0d0d;
+  --color-brand-white: #ffffff;
+  --color-brand-neon: #00ff66;
+  --color-brand-orange: #ff4d00;
+  --color-brand-purple: #7928ca;
+  --color-brand-gold: #f59e0b;
+  --color-brand-gray: #f4f4f6;
+  --color-brand-darkgray: #1f1f23;
+  --color-brand-border: #000000;
+
+  --shadow-sm: 2px 2px 0px #000000;
+  --shadow-md: 4px 4px 0px #000000;
+  --shadow-lg: 6px 6px 0px #000000;
+  --shadow-xl: 8px 8px 0px #000000;
+  --shadow-neon: 0 0 15px rgba(0, 255, 102, 0.4);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: #f8f9fa;
+  color: var(--color-brand-black);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6, .font-display {
+  font-family: var(--font-display);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+  background: #000000;
+  border-radius: 0px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-brand-neon);
+}
+
+/* Neo-Brutalism Components */
+.neo-box {
+  background: #ffffff;
+  border: 2px solid #000000;
+  box-shadow: var(--shadow-md);
+  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.neo-box-hover:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.neo-box-active:active {
+  transform: translate(2px, 2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.neo-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.75rem 1.5rem;
+  background: #000000;
+  color: #ffffff;
+  border: 2px solid #000000;
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.neo-btn:hover {
+  background: #1a1a1a;
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.neo-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.neo-btn-neon {
+  background: var(--color-brand-neon);
+  color: #000000;
+  border: 2px solid #000000;
+  box-shadow: var(--shadow-md);
+}
+.neo-btn-neon:hover {
+  background: #00e65c;
+  color: #000000;
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.neo-btn-secondary {
+  background: #ffffff;
+  color: #000000;
+  border: 2px solid #000000;
+  box-shadow: var(--shadow-md);
+}
+.neo-btn-secondary:hover {
+  background: #f4f4f5;
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.neo-btn-danger {
+  background: #ef4444;
+  color: #ffffff;
+  border: 2px solid #000000;
+  box-shadow: var(--shadow-md);
+}
+.neo-btn-danger:hover {
+  background: #dc2626;
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.neo-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: #ffffff;
+  border: 2px solid #000000;
+  box-shadow: var(--shadow-sm);
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  color: #000000;
+  outline: none;
+  transition: all 0.15s ease;
+}
+
+.neo-input:focus {
+  border-color: #000000;
+  box-shadow: var(--shadow-md);
+  background-color: #fafafa;
+}
+
+.neo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.25rem 0.6rem;
+  border: 1.5px solid #000000;
+  box-shadow: 2px 2px 0px #000000;
+}
+
+/* Animations */
+@keyframes ticker {
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
+}
+
+.animate-ticker {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: ticker 25s linear infinite;
+}
+
+.animate-ticker:hover {
+  animation-play-state: paused;
+}
+
+@keyframes pulseSlow {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(1.03); }
+}
+
+.animate-pulse-slow {
+  animation: pulseSlow 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* High Fashion Grid */
+.fashion-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .fashion-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
