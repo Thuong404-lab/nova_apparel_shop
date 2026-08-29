@@ -1,116 +1,100 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   ArrowRight, 
   Sparkles, 
-  Flame, 
-  TrendingUp, 
-  ShoppingBag, 
   ShieldCheck, 
-  Zap, 
+  Truck, 
+  RefreshCw, 
+  CreditCard, 
   Star,
-  Quote
+  ChevronRight,
+  TrendingUp
 } from 'lucide-react';
-import { productApi } from '../../services/api';
 import { ProductCard } from '../../components/common/ProductCard';
 import { ProductQuickViewModal } from '../../components/common/ProductQuickViewModal';
+import { productApi } from '../../services/api';
+import { formatCurrency } from '../../utils/formatters';
 
 export const HomePage = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [quickViewProduct, setQuickViewProduct] = useState(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [prodRes, catRes] = await Promise.all([
-          productApi.getAll(),
-          productApi.getCategories()
-        ]);
-        if (prodRes.success) setProducts(prodRes.data);
-        if (catRes.success) setCategories(catRes.data);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
+    async function loadData() {
+      const prodRes = await productApi.getAll();
+      if (prodRes.success) setProducts(prodRes.data);
+
+      const catRes = await productApi.getCategories();
+      if (catRes.success) setCategories(catRes.data);
+    }
+    loadData();
   }, []);
 
   const bestSellers = products.slice(0, 4);
-  const newArrivals = products.slice(4, 8);
+  const newArrivals = products.slice(2, 6);
 
   return (
-    <div className="space-y-20">
-      {/* 1. HERO BANNER */}
-      <section className="relative bg-black text-white border-b-4 border-black overflow-hidden py-16 md:py-24">
-        {/* Background Gradients & Grid Pattern */}
-        <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#00ff66_1px,transparent_1px)] [background-size:24px_24px]" />
-        
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+    <div className="space-y-20 pb-20">
+      
+      {/* 1. HERO LOOKBOOK BANNER (Minimalist Luxury) */}
+      <section className="relative bg-zinc-950 text-white overflow-hidden">
+        <div className="absolute inset-0 z-0 opacity-40">
+          <img 
+            src="https://images.unsplash.com/photo-1509631179647-0177331693ae?w=1600" 
+            alt="Runway Fashion"
+            className="w-full h-full object-cover object-center filter grayscale contrast-125"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-950/80 to-transparent"></div>
+        </div>
+
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-36">
+          <div className="max-w-2xl space-y-6">
             
-            {/* Left Content */}
-            <div className="lg:col-span-7 space-y-6">
-              <span className="inline-block px-3 py-1 bg-black text-[#00ff66] font-mono text-xs font-bold uppercase tracking-widest border border-black shadow-[2px_2px_0px_#000] mb-4">
-                NOVA APPAREL // 2026 RUNWAY DROP
-              </span>
-              <h1 className="font-display font-black text-4xl sm:text-6xl lg:text-7xl tracking-tighter uppercase leading-[0.9] text-white">
-                ĐỊNH HÌNH <br className="hidden sm:inline" />
-                <span className="text-stroke-white text-transparent hover:text-white transition-colors">PHONG CÁCH</span> <br />
-                ĐƯỜNG PHỐ
-              </h1>
-
-              <p className="text-neutral-300 text-sm sm:text-base max-w-lg leading-relaxed font-medium">
-                Khám phá các thiết kế thời trang đường phố phá cách, chất liệu cao cấp chuẩn xuất khẩu với trải nghiệm mua sắm mượt mà nhất.
-              </p>
-
-              <div className="flex flex-wrap gap-4 pt-4">
-                <Link
-                  to="/catalog"
-                  className="px-8 py-4 bg-[#00ff66] text-black font-display font-black text-sm uppercase tracking-wider border-2 border-white shadow-[5px_5px_0px_#fff] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_#fff] transition-all flex items-center gap-2"
-                >
-                  <ShoppingBag className="w-4 h-4" /> Mua Sắm Ngay
-                </Link>
-                <Link
-                  to="/catalog?category=CAT002"
-                  className="px-8 py-4 bg-transparent text-white font-display font-black text-sm uppercase tracking-wider border-2 border-white shadow-[5px_5px_0px_#00ff66] hover:bg-white hover:text-black transition-all flex items-center gap-2"
-                >
-                  Outerwear 2026 <ArrowRight className="w-4 h-4" />
-                </Link>
-              </div>
-
-              {/* Stats Bar */}
-              <div className="grid grid-cols-3 gap-6 pt-8 border-t border-neutral-800 max-w-md">
-                <div>
-                  <span className="font-display font-black text-2xl text-[#00ff66] block">5,000+</span>
-                  <span className="text-[11px] text-neutral-400 font-mono">ĐƠN HÀNG ĐÃ GIAO</span>
-                </div>
-                <div>
-                  <span className="font-display font-black text-2xl text-[#00ff66] block">99.4%</span>
-                  <span className="text-[11px] text-neutral-400 font-mono">HÀI LÒNG</span>
-                </div>
-                <div>
-                  <span className="font-display font-black text-2xl text-[#00ff66] block">100%</span>
-                  <span className="text-[11px] text-neutral-400 font-mono">CHÍNH HÃNG</span>
-                </div>
-              </div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-zinc-800/80 backdrop-blur-md rounded-full text-zinc-300 text-xs font-medium border border-zinc-700">
+              <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+              <span>BỘ SƯU TẬP XUÂN HÈ 2026</span>
             </div>
 
-            {/* Right Hero Image Card */}
-            <div className="lg:col-span-5 relative">
-              <div className="relative mx-auto max-w-md bg-neutral-900 border-4 border-white p-3 shadow-[12px_12px_0px_#00ff66]">
-                <img
-                  src="https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800"
-                  alt="Streetwear Hero"
-                  className="w-full aspect-[3/4] object-cover border-2 border-black"
-                />
-                
-                {/* Floating Badge */}
-                <div className="absolute -bottom-6 -left-6 bg-white text-black p-4 border-3 border-black shadow-[6px_6px_0px_#000] max-w-[200px]">
-                  <span className="text-[10px] font-mono font-bold text-neutral-500 uppercase block">Ưu đãi hôm nay</span>
-                  <span className="font-display font-black text-sm leading-tight block">GIẢM 20% CHO KHÁCH HÀNG MỚI</span>
-                </div>
+            <h1 className="font-display font-bold text-4xl sm:text-6xl lg:text-7xl tracking-tight text-white leading-[1.05]">
+              Định Hình <br />
+              <span className="text-emerald-400 italic font-serif">Phong Cách</span> Riêng
+            </h1>
+
+            <p className="text-zinc-300 text-base sm:text-lg leading-relaxed font-normal max-w-xl">
+              Khám phá các thiết kế thời trang đường phố cao cấp, phom dáng chuẩn quốc tế, may đo tỉ mỉ trên nền chất liệu bền vững.
+            </p>
+
+            <div className="flex flex-wrap items-center gap-4 pt-4">
+              <Link 
+                to="/catalog" 
+                className="luxury-btn-accent px-8 py-3.5 text-sm"
+              >
+                <span>Khám Phá Ngay</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+              <Link 
+                to="/catalog?category=CAT002" 
+                className="px-6 py-3.5 rounded-xl text-sm font-semibold bg-white/10 hover:bg-white/20 backdrop-blur-md text-white border border-white/20 transition-colors"
+              >
+                Áo Khoác Outerwear
+              </Link>
+            </div>
+
+            {/* Quick Metrics */}
+            <div className="grid grid-cols-3 gap-6 pt-10 border-t border-zinc-800/80 max-w-lg">
+              <div>
+                <p className="font-display font-bold text-2xl text-white">5,000+</p>
+                <p className="text-xs text-zinc-400 mt-0.5">Khách hàng tin chọn</p>
+              </div>
+              <div>
+                <p className="font-display font-bold text-2xl text-white">100%</p>
+                <p className="text-xs text-zinc-400 mt-0.5">Chất liệu cao cấp</p>
+              </div>
+              <div>
+                <p className="font-display font-bold text-2xl text-emerald-400">4.9/5</p>
+                <p className="text-xs text-zinc-400 mt-0.5">Đánh giá 5 sao</p>
               </div>
             </div>
 
@@ -118,243 +102,213 @@ export const HomePage = () => {
         </div>
       </section>
 
-      {/* 2. CATEGORY SPOTLIGHT GRID */}
+      {/* 2. CATEGORY CURATION CARDS */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 pb-4 border-b-2 border-black gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
           <div>
-            <span className="font-mono text-xs uppercase tracking-widest text-[#ff4d00] font-bold block mb-1">
-              DISCOVER BY CATEGORY
+            <span className="text-xs font-semibold uppercase tracking-wider text-emerald-600">
+              DANH MỤC TUYỂN CHỌN
             </span>
-            <h2 className="font-display font-black text-2xl sm:text-4xl uppercase tracking-tight">
-              DANH MỤC THỜI TRANG
+            <h2 className="font-display font-bold text-2xl sm:text-3xl text-zinc-900 mt-1">
+              Khám Phá Theo Phong Cách
             </h2>
           </div>
-          <Link
-            to="/catalog"
-            className="font-display font-bold text-xs uppercase tracking-wider hover:text-[#ff4d00] flex items-center gap-1.5"
+          <Link 
+            to="/catalog" 
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-zinc-900 hover:text-emerald-600 transition-colors group"
           >
-            Xem toàn bộ <ArrowRight className="w-4 h-4" />
+            <span>Xem tất cả danh mục</span>
+            <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          {categories.map((cat) => (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+          {[
+            { id: 'CAT001', name: 'Áo Thun (Tops & Tees)', img: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=600', count: '18 sản phẩm' },
+            { id: 'CAT002', name: 'Áo Khoác (Outerwear)', img: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=600', count: '12 sản phẩm' },
+            { id: 'CAT003', name: 'Quần & Jeans (Bottoms)', img: 'https://images.unsplash.com/photo-1517445312882-bc9910d016b7?w=600', count: '15 sản phẩm' },
+            { id: 'CAT004', name: 'Đầm & Váy (Dresses)', img: 'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=600', count: '9 sản phẩm' },
+          ].map((cat) => (
             <Link
-              key={cat.categoryId}
-              to={`/catalog?category=${cat.categoryId}`}
-              className="group relative bg-white border-2 border-black p-4 shadow-[4px_4px_0px_#000] hover:shadow-[7px_7px_0px_#00ff66] hover:-translate-x-0.5 hover:-translate-y-0.5 transition-all flex flex-col justify-between aspect-square"
+              key={cat.id}
+              to={`/catalog?category=${cat.id}`}
+              className="group relative aspect-[4/5] rounded-2xl overflow-hidden bg-zinc-100 shadow-sm hover:shadow-xl transition-all duration-500"
             >
-              <div className="aspect-[4/3] bg-neutral-100 border border-black overflow-hidden mb-3">
-                <img
-                  src={cat.image}
-                  alt={cat.name}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                />
-              </div>
-              <div>
-                <h3 className="font-display font-bold text-sm uppercase leading-tight group-hover:text-[#ff4d00] transition-colors">
+              <img 
+                src={cat.img} 
+                alt={cat.name}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+              <div className="absolute inset-x-4 bottom-4 text-white">
+                <p className="font-display font-bold text-base sm:text-lg leading-tight group-hover:text-emerald-400 transition-colors">
                   {cat.name}
-                </h3>
-                <span className="text-[10px] font-mono text-neutral-500 font-semibold block mt-0.5">
-                  {cat.count} SẢN PHẨM
-                </span>
+                </p>
+                <p className="text-xs text-zinc-300 font-light mt-0.5">{cat.count}</p>
               </div>
             </Link>
           ))}
         </div>
       </section>
 
-      {/* 3. BEST SELLERS SHOWCASE */}
+      {/* 3. BEST SELLERS SECTION */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between mb-8 pb-4 border-b-2 border-black">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-black text-[#00ff66] flex items-center justify-center border-2 border-black shadow-[2px_2px_0px_#000]">
-              <Flame className="w-4 h-4 fill-current" />
-            </div>
-            <div>
-              <h2 className="font-display font-black text-2xl sm:text-3xl uppercase tracking-tight">
-                SẢN PHẨM BÁN CHẠY NHẤT
-              </h2>
-              <p className="text-xs text-neutral-500 font-mono">XU HƯỚNG ĐƯỢC YÊU THÍCH TRONG TUẦN</p>
-            </div>
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+          <div>
+            <span className="text-xs font-semibold uppercase tracking-wider text-emerald-600">
+              XU HƯỚNG BÁN CHẠY
+            </span>
+            <h2 className="font-display font-bold text-2xl sm:text-3xl text-zinc-900 mt-1">
+              Sản Phẩm Được Yêu Thích Nhất
+            </h2>
           </div>
-          <Link
-            to="/catalog?sort=rating"
-            className="hidden sm:inline-flex neo-btn neo-btn-secondary text-xs"
+          <Link 
+            to="/catalog" 
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-zinc-900 hover:text-emerald-600 transition-colors group"
           >
-            Xem Tất Cả
+            <span>Xem toàn bộ BST</span>
+            <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
 
         <div className="fashion-grid">
           {bestSellers.map((prod) => (
-            <ProductCard
-              key={prod.productId}
-              product={prod}
-              onQuickView={(p) => setQuickViewProduct(p)}
+            <ProductCard 
+              key={prod.productId} 
+              product={prod} 
+              onQuickView={(p) => setQuickViewProduct(p)} 
             />
           ))}
         </div>
       </section>
 
-      {/* 4. HIGH-FASHION PROMO BANNER */}
+      {/* 4. EDITORIAL STORY BANNER */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="relative bg-gradient-to-r from-neutral-950 via-neutral-900 to-black text-white border-4 border-black p-8 md:p-14 shadow-[10px_10px_0px_#ff4d00] overflow-hidden">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center relative z-10">
-            <div className="space-y-4">
-              <span className="neo-badge bg-[#ff4d00] text-white border-white text-xs">
-                LIMITED EDITION
+        <div className="relative rounded-3xl bg-zinc-900 text-white overflow-hidden">
+          <div className="grid lg:grid-cols-2 items-center">
+            
+            {/* Left Narrative */}
+            <div className="p-8 sm:p-12 lg:p-16 space-y-6">
+              <span className="text-xs font-bold uppercase tracking-widest text-emerald-400">
+                TRIẾT LÝ THIẾT KẾ // RAW & REFINED
               </span>
-              <h2 className="font-display font-black text-3xl sm:text-5xl uppercase tracking-tight leading-none">
-                BỘ SƯU TẬP HOODIE & BIKER JACKET 2026
+              <h2 className="font-display font-bold text-3xl sm:text-4xl lg:text-5xl leading-tight">
+                Sự Tinh Tế Trong Từng Chi Tiết Đường Phố
               </h2>
-              <p className="text-xs sm:text-sm text-neutral-300 max-w-md leading-relaxed font-medium">
-                Da PU cao cấp không nổ kết hợp nỉ bông 380gsm chuẩn Y2K. Thiết kế giới hạn chỉ 100 chiếc mỗi mẫu.
+              <p className="text-zinc-300 text-sm sm:text-base leading-relaxed">
+                Tại NOVA, chúng tôi kết hợp phom dáng phóng khoáng của văn hóa đường phố đương đại cùng kỹ thuật may đo tỉ mỉ chuẩn Haute Couture. Từng đường kim, nút kim loại và chất vải đều được kiểm duyệt kỹ lưỡng để mang đến cảm giác thoải mái và khác biệt nhất.
               </p>
               <div className="pt-2">
-                <Link
-                  to="/catalog?category=CAT002"
-                  className="inline-flex neo-btn neo-btn-neon text-xs"
+                <Link 
+                  to="/catalog" 
+                  className="luxury-btn-accent"
                 >
-                  Khám Phá Ngay <ArrowRight className="w-4 h-4" />
+                  <span>Tìm Hiểu Bộ Sưu Tập</span>
+                  <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
             </div>
 
-            <div className="flex justify-center lg:justify-end">
-              <div className="relative max-w-xs border-2 border-white bg-white p-2 shadow-[8px_8px_0px_#00ff66]">
-                <img
-                  src="https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=600"
-                  alt="Hoodie Cyberpunk"
-                  className="w-full aspect-[4/5] object-cover border border-black"
-                />
-              </div>
+            {/* Right Image */}
+            <div className="relative aspect-square lg:aspect-auto lg:h-full w-full bg-zinc-800">
+              <img 
+                src="https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=800" 
+                alt="Editorial Streetwear"
+                className="w-full h-full object-cover"
+              />
             </div>
+
           </div>
         </div>
       </section>
 
-      {/* 5. NEW ARRIVALS */}
+      {/* 5. NEW ARRIVALS SECTION */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between mb-8 pb-4 border-b-2 border-black">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-black text-[#ff4d00] flex items-center justify-center border-2 border-black shadow-[2px_2px_0px_#000]">
-              <Sparkles className="w-4 h-4 fill-current" />
-            </div>
-            <div>
-              <h2 className="font-display font-black text-2xl sm:text-3xl uppercase tracking-tight">
-                HÀNG MỚI VỀ
-              </h2>
-              <p className="text-xs text-neutral-500 font-mono">CẬP NHẬT MỖI TUẦN TẠI HỆ THỐNG</p>
-            </div>
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+          <div>
+            <span className="text-xs font-semibold uppercase tracking-wider text-emerald-600">
+              MỚI RA MẮT
+            </span>
+            <h2 className="font-display font-bold text-2xl sm:text-3xl text-zinc-900 mt-1">
+              Thiết Kế Mới Nhất Tuần Này
+            </h2>
           </div>
-          <Link
-            to="/catalog"
-            className="hidden sm:inline-flex neo-btn neo-btn-secondary text-xs"
+          <Link 
+            to="/catalog" 
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-zinc-900 hover:text-emerald-600 transition-colors group"
           >
-            Xem Thêm
+            <span>Khám phá thêm</span>
+            <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
 
         <div className="fashion-grid">
           {newArrivals.map((prod) => (
-            <ProductCard
-              key={prod.productId}
-              product={prod}
-              onQuickView={(p) => setQuickViewProduct(p)}
+            <ProductCard 
+              key={prod.productId} 
+              product={prod} 
+              onQuickView={(p) => setQuickViewProduct(p)} 
             />
           ))}
         </div>
       </section>
 
-      {/* 6. CUSTOMER REVIEWS & TESTIMONIALS */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white border-3 border-black p-8 md:p-12 shadow-[8px_8px_0px_#000]">
-          <div className="text-center max-w-xl mx-auto mb-10">
-            <span className="font-mono text-xs uppercase tracking-widest text-[#ff4d00] font-bold block mb-1">
-              COMMUNITY VOICES
-            </span>
-            <h2 className="font-display font-black text-2xl sm:text-4xl uppercase tracking-tight">
-              KHÁCH HÀNG NÓI GÌ VỀ CHÚNG TÔI
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-6 bg-neutral-50 border-2 border-black shadow-[4px_4px_0px_#000] space-y-4">
-              <div className="flex text-amber-400">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4 fill-current" />
-                ))}
-              </div>
-              <p className="text-xs text-neutral-700 leading-relaxed font-medium">
-                "Áo thun Shark oversize dày dặn, vải 100% cotton mát rượi, giao hàng cực nhanh chỉ 2 ngày là nhận được!"
-              </p>
-              <div className="flex items-center gap-3 pt-2 border-t border-neutral-200">
-                <img
-                  src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100"
-                  alt="Avatar"
-                  className="w-8 h-8 rounded-full border border-black"
-                />
-                <div>
-                  <h4 className="font-display font-bold text-xs">Nguyễn Văn A</h4>
-                  <span className="text-[10px] font-mono text-neutral-500">Khách hàng thân thiết</span>
-                </div>
-              </div>
+      {/* 6. BRAND VALUE PILLARS */}
+      <section className="border-t border-zinc-200 pt-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          
+          <div className="flex items-start gap-4">
+            <div className="p-3 bg-zinc-100 rounded-2xl text-zinc-900 flex-shrink-0">
+              <Truck className="w-6 h-6" />
             </div>
-
-            <div className="p-6 bg-neutral-50 border-2 border-black shadow-[4px_4px_0px_#000] space-y-4">
-              <div className="flex text-amber-400">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4 fill-current" />
-                ))}
-              </div>
-              <p className="text-xs text-neutral-700 leading-relaxed font-medium">
-                "Biker jacket lên form cực đỉnh, khóa kéo mạ tĩnh điện sáng bóng. Trải nghiệm thanh toán qua ví rất mượt."
-              </p>
-              <div className="flex items-center gap-3 pt-2 border-t border-neutral-200">
-                <img
-                  src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100"
-                  alt="Avatar"
-                  className="w-8 h-8 rounded-full border border-black"
-                />
-                <div>
-                  <h4 className="font-display font-bold text-xs">Trần Thị Bích</h4>
-                  <span className="text-[10px] font-mono text-neutral-500">Hà Nội</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-6 bg-neutral-50 border-2 border-black shadow-[4px_4px_0px_#000] space-y-4">
-              <div className="flex text-amber-400">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4 fill-current" />
-                ))}
-              </div>
-              <p className="text-xs text-neutral-700 leading-relaxed font-medium">
-                "Giao diện website cực kỳ xịn xò, hiện đại, xem chi tiết từng màu sắc và kích thước tồn kho rất rõ ràng!"
-              </p>
-              <div className="flex items-center gap-3 pt-2 border-t border-neutral-200">
-                <img
-                  src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=100"
-                  alt="Avatar"
-                  className="w-8 h-8 rounded-full border border-black"
-                />
-                <div>
-                  <h4 className="font-display font-bold text-xs">Lê Quang Cường</h4>
-                  <span className="text-[10px] font-mono text-neutral-500">Đà Nẵng</span>
-                </div>
-              </div>
+            <div className="space-y-1">
+              <h4 className="font-display font-bold text-base text-zinc-900">Giao Hàng Siêu Tốc</h4>
+              <p className="text-xs text-zinc-500 leading-relaxed">Hỏa tốc 2h nội thành Hà Nội & TP.HCM. Miễn phí vận chuyển toàn quốc từ 500k.</p>
             </div>
           </div>
+
+          <div className="flex items-start gap-4">
+            <div className="p-3 bg-zinc-100 rounded-2xl text-zinc-900 flex-shrink-0">
+              <RefreshCw className="w-6 h-6" />
+            </div>
+            <div className="space-y-1">
+              <h4 className="font-display font-bold text-base text-zinc-900">Đổi Trả Trong 7 Ngày</h4>
+              <p className="text-xs text-zinc-500 leading-relaxed">Hỗ trợ đổi size và đổi mẫu tận nơi nhanh chóng, miễn phí nếu phát sinh lỗi may.</p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-4">
+            <div className="p-3 bg-zinc-100 rounded-2xl text-zinc-900 flex-shrink-0">
+              <ShieldCheck className="w-6 h-6" />
+            </div>
+            <div className="space-y-1">
+              <h4 className="font-display font-bold text-base text-zinc-900">Chính Hãng 100%</h4>
+              <p className="text-xs text-zinc-500 leading-relaxed">Cam kết chất liệu vải Cotton cao cấp định lượng 250 - 380gsm bền bỉ theo thời gian.</p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-4">
+            <div className="p-3 bg-zinc-100 rounded-2xl text-zinc-900 flex-shrink-0">
+              <CreditCard className="w-6 h-6" />
+            </div>
+            <div className="space-y-1">
+              <h4 className="font-display font-bold text-base text-zinc-900">Ví Tiền & VNPay QR</h4>
+              <p className="text-xs text-zinc-500 leading-relaxed">Tích hợp Ví Nova Wallet nạp tiền tức thì cùng cổng thanh toán VNPay tiện lợi.</p>
+            </div>
+          </div>
+
         </div>
       </section>
 
       {/* Quick View Modal */}
-      <ProductQuickViewModal
-        product={quickViewProduct}
-        isOpen={!!quickViewProduct}
-        onClose={() => setQuickViewProduct(null)}
-      />
+      {quickViewProduct && (
+        <ProductQuickViewModal
+          product={quickViewProduct}
+          isOpen={!!quickViewProduct}
+          onClose={() => setQuickViewProduct(null)}
+        />
+      )}
+
     </div>
   );
 };

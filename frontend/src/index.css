@@ -1,189 +1,202 @@
 ﻿@import "tailwindcss";
 
 /* ==========================================================================
-   NOVA APPAREL DESIGN SYSTEM (NEO-BRUTALISM + LUXURY STREETWEAR)
+   NOVA APPAREL - LUXURY MINIMALIST STREETWEAR DESIGN SYSTEM
    ========================================================================== */
 
-:root {
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-display: 'Space Grotesk', 'Syne', sans-serif;
-  
-  --color-brand-black: #0d0d0d;
-  --color-brand-white: #ffffff;
-  --color-brand-neon: #00ff66;
-  --color-brand-orange: #ff4d00;
-  --color-brand-purple: #7928ca;
-  --color-brand-gold: #f59e0b;
-  --color-brand-gray: #f4f4f6;
-  --color-brand-darkgray: #1f1f23;
-  --color-brand-border: #000000;
+@layer base {
+  :root {
+    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-display: 'Space Grotesk', system-ui, sans-serif;
+    
+    --color-obsidian: #09090b;
+    --color-slate-dark: #18181b;
+    --color-accent: #00ff66;
+    --color-accent-subtle: rgba(0, 255, 102, 0.1);
+  }
 
-  --shadow-sm: 2px 2px 0px #000000;
-  --shadow-md: 4px 4px 0px #000000;
-  --shadow-lg: 6px 6px 0px #000000;
-  --shadow-xl: 8px 8px 0px #000000;
-  --shadow-neon: 0 0 15px rgba(0, 255, 102, 0.4);
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: #fafafa;
+    color: #09090b;
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6, .font-display {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: var(--font-sans);
-  background-color: #f8f9fa;
-  color: var(--color-brand-black);
-  min-height: 100vh;
-  overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
-}
-
-h1, h2, h3, h4, h5, h6, .font-display {
-  font-family: var(--font-display);
-}
-
-/* Text outline utility */
-.text-stroke-black {
-  -webkit-text-stroke: 1.5px #000000;
-}
-.text-stroke-white {
-  -webkit-text-stroke: 1.5px #ffffff;
-}
-
-/* Custom Scrollbar */
+/* Custom Sleek Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: #f4f4f5;
 }
 ::-webkit-scrollbar-thumb {
-  background: #000000;
-  border-radius: 0px;
+  background: #a1a1aa;
+  border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-brand-neon);
+  background: #71717a;
 }
 
-/* Neo-Brutalism Components */
-.neo-box {
+/* Modern Luxury UI Utility Classes */
+.luxury-card {
   background: #ffffff;
-  border: 2px solid #000000;
-  box-shadow: var(--shadow-md);
-  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+  border: 1px solid #e4e4e7;
+  border-radius: 1rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.neo-box-hover:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: var(--shadow-lg);
+.luxury-card:hover {
+  border-color: #d4d4d8;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+  transform: translateY(-2px);
 }
 
-.neo-box-active:active {
-  transform: translate(2px, 2px);
-  box-shadow: var(--shadow-sm);
+.luxury-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.875rem;
+  letter-spacing: 0.025em;
+  padding: 0.75rem 1.5rem;
+  background: #09090b;
+  color: #ffffff;
+  border-radius: 0.75rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  user-select: none;
 }
 
-.neo-btn {
+.luxury-btn-primary:hover {
+  background: #27272a;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+.luxury-btn-primary:active {
+  transform: translateY(0);
+}
+
+.luxury-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.875rem;
+  letter-spacing: 0.025em;
+  padding: 0.75rem 1.5rem;
+  background: #ffffff;
+  color: #09090b;
+  border: 1px solid #e4e4e7;
+  border-radius: 0.75rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.luxury-btn-secondary:hover {
+  background: #f4f4f5;
+  border-color: #d4d4d8;
+}
+
+.luxury-btn-accent {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
   font-family: var(--font-display);
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  font-size: 0.875rem;
+  letter-spacing: 0.025em;
   padding: 0.75rem 1.5rem;
-  background: #000000;
-  color: #ffffff;
-  border: 2px solid #000000;
-  box-shadow: var(--shadow-md);
+  background: #00ff66;
+  color: #09090b;
+  border-radius: 0.75rem;
+  transition: all 0.2s ease;
   cursor: pointer;
-  transition: all 0.15s ease;
-  user-select: none;
 }
 
-.neo-btn:hover {
-  background: #1a1a1a;
-  transform: translate(-2px, -2px);
-  box-shadow: var(--shadow-lg);
-}
-
-.neo-btn:active {
-  transform: translate(2px, 2px);
-  box-shadow: var(--shadow-sm);
-}
-
-.neo-btn-neon {
-  background: var(--color-brand-neon);
-  color: #000000;
-  border: 2px solid #000000;
-  box-shadow: var(--shadow-md);
-}
-.neo-btn-neon:hover {
+.luxury-btn-accent:hover {
   background: #00e65c;
-  color: #000000;
-  transform: translate(-2px, -2px);
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 4px 16px rgba(0, 255, 102, 0.35);
+  transform: translateY(-1px);
 }
 
-.neo-btn-secondary {
-  background: #ffffff;
-  color: #000000;
-  border: 2px solid #000000;
-  box-shadow: var(--shadow-md);
-}
-.neo-btn-secondary:hover {
-  background: #f4f4f5;
-  transform: translate(-2px, -2px);
-  box-shadow: var(--shadow-lg);
-}
-
-.neo-btn-danger {
-  background: #ef4444;
-  color: #ffffff;
-  border: 2px solid #000000;
-  box-shadow: var(--shadow-md);
-}
-.neo-btn-danger:hover {
-  background: #dc2626;
-  transform: translate(-2px, -2px);
-  box-shadow: var(--shadow-lg);
-}
-
-.neo-input {
+.luxury-input {
   width: 100%;
   padding: 0.75rem 1rem;
   background: #ffffff;
-  border: 2px solid #000000;
-  box-shadow: var(--shadow-sm);
+  border: 1px solid #e4e4e7;
+  border-radius: 0.75rem;
   font-family: var(--font-sans);
-  font-size: 0.95rem;
-  color: #000000;
+  font-size: 0.875rem;
+  color: #09090b;
   outline: none;
-  transition: all 0.15s ease;
+  transition: all 0.2s ease;
 }
 
-.neo-input:focus {
-  border-color: #000000;
-  box-shadow: var(--shadow-md);
-  background-color: #fafafa;
+.luxury-input:focus {
+  border-color: #09090b;
+  box-shadow: 0 0 0 2px rgba(9, 9, 11, 0.08);
 }
 
-.neo-badge {
+.luxury-badge {
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  font-family: var(--font-display);
   font-size: 0.75rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: 0.25rem 0.6rem;
-  border: 1.5px solid #000000;
-  box-shadow: 2px 2px 0px #000000;
+  font-weight: 600;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  background: #f4f4f5;
+  color: #3f3f46;
+}
+
+/* Glassmorphism */
+.glass-header {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(228, 228, 231, 0.8);
+}
+
+/* Clean High Fashion Grid */
+.fashion-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .fashion-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .fashion-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 2rem;
+  }
 }
 
 /* Animations */
@@ -195,40 +208,9 @@ h1, h2, h3, h4, h5, h6, .font-display {
 .animate-ticker {
   display: inline-flex;
   white-space: nowrap;
-  animation: ticker 25s linear infinite;
+  animation: ticker 30s linear infinite;
 }
 
 .animate-ticker:hover {
   animation-play-state: paused;
-}
-
-@keyframes pulseSlow {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.85; transform: scale(1.03); }
-}
-
-.animate-pulse-slow {
-  animation: pulseSlow 3s ease-in-out infinite;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-8px); }
-}
-
-.animate-float {
-  animation: float 4s ease-in-out infinite;
-}
-
-/* High Fashion Grid */
-.fashion-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 1.5rem;
-}
-
-@media (min-width: 1024px) {
-  .fashion-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
 }

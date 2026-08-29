@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+﻿import React, { createContext, useContext, useState, useEffect } from 'react';
 import { cartApi } from '../services/api';
 import { useToast } from './ToastContext';
 
@@ -18,18 +18,18 @@ export const CartProvider = ({ children }) => {
       variantId: variant.variantId,
       productId: product.productId,
       name: product.name,
-      image: product.images[0],
-      sizeName: variant.sizeName,
-      colorName: variant.colorName,
+      image: typeof product.images?.[0] === 'string' ? product.images[0] : product.images?.[0]?.imageUrl,
+      sizeName: variant.sizeName || 'M',
+      colorName: variant.colorName || 'Default',
       unitPrice: variant.priceOverride || product.basePrice,
       quantity: Number(quantity),
-      stockQty: variant.stockQty,
+      stockQty: variant.stockQty || 10,
       reservedQty: variant.reservedQty || 0
     };
 
     const updated = cartApi.addItem(cartItem);
     setItems([...updated]);
-    addToast(`Đã thêm ${product.name} (${variant.sizeName} - ${variant.colorName}) vào giỏ!`, 'success');
+    addToast(`Đã thêm ${product.name} vào giỏ hàng!`, 'success');
     setIsCartOpen(true);
   };
 
@@ -57,10 +57,12 @@ export const CartProvider = ({ children }) => {
       value={{
         items,
         addItem,
+        addToCart: addItem,
         updateQuantity,
         removeItem,
         clearCart,
         totalItems,
+        getCartCount: () => totalItems,
         subtotal,
         isCartOpen,
         setIsCartOpen
