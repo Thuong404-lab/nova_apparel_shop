@@ -1,1 +1,1 @@
-package com.fashion.dto;
+package com.fashion.dtos;

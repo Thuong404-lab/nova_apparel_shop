@@ -1,1 +1,1 @@
-package com.fashion.config;
+package com.fashion.configurations;
