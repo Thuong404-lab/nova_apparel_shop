@@ -1,31 +1,34 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { 
   Package, 
+  CheckCircle, 
   Truck, 
-  CheckCircle2, 
-  AlertCircle, 
+  Clock, 
+  Search, 
   Printer, 
+  Filter, 
   Eye, 
-  Warehouse, 
-  Search,
-  Filter
+  X,
+  FileText
 } from 'lucide-react';
-import { staffApi, orderApi } from '../../services/api';
+import { staffApi } from '../../services/api';
 import { formatCurrency, formatDate, getOrderStatusInfo, getPaymentStatusInfo } from '../../utils/formatters';
 import { useToast } from '../../context/ToastContext';
 
 export const StaffDashboard = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedStatus, setSelectedStatus] = useState('All');
+  const [filterStatus, setFilterStatus] = useState('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedOrderForBill, setSelectedOrderForBill] = useState(null);
+
   const { addToast } = useToast();
 
-  const fetchOrders = async () => {
+  const loadOrders = async () => {
     setLoading(true);
     try {
-      const res = await staffApi.getAllOrders();
+      const res = await staffApi.getOrders();
       if (res.success) {
         setOrders(res.data);
       }
@@ -35,108 +38,118 @@ export const StaffDashboard = () => {
   };
 
   useEffect(() => {
-    fetchOrders();
+    loadOrders();
   }, []);
 
   const handleUpdateStatus = async (orderId, newStatus) => {
-    const res = await staffApi.updateStatus(orderId, newStatus);
+    const res = await staffApi.updateOrderStatus(orderId, newStatus);
     if (res.success) {
-      addToast(res.message, 'success');
-      fetchOrders();
+      addToast(`Đã cập nhật đơn hàng ${orderId} sang "${newStatus}"!`, 'success');
+      loadOrders();
     }
   };
 
   const filteredOrders = orders.filter((o) => {
-    if (selectedStatus !== 'All' && o.orderStatus !== selectedStatus) return false;
+    if (filterStatus !== 'ALL' && o.orderStatus?.toUpperCase() !== filterStatus) {
+      return false;
+    }
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
-      return (
-        o.orderId.toLowerCase().includes(q) ||
-        o.customerName?.toLowerCase().includes(q) ||
-        o.customerPhone?.includes(q)
-      );
+      const matchId = o.orderId.toLowerCase().includes(q);
+      const matchName = o.customerName?.toLowerCase().includes(q);
+      const matchPhone = o.phone?.includes(q);
+      return matchId || matchName || matchPhone;
     }
     return true;
   });
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-      {/* Header Banner */}
-      <div className="bg-gradient-to-r from-blue-900 via-neutral-900 to-black text-white p-6 border-3 border-black shadow-[6px_6px_0px_#000] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <span className="font-mono text-xs text-[#00ff66] uppercase tracking-widest block mb-1">
-            STAFF OPERATIONS // ORDER FULFILLMENT PORTAL
-          </span>
-          <h1 className="font-display font-black text-2xl sm:text-4xl uppercase tracking-tight">
-            CỔNG XỬ LÝ ĐƠN HÀNG & IN HÓA ĐƠN
-          </h1>
-        </div>
+    <div className="space-y-8">
+      
+      {/* 1. Header Banner */}
+      <div className="bg-zinc-950 text-white rounded-3xl p-8 relative overflow-hidden shadow-xl border border-zinc-800">
+        <span className="text-xs font-bold uppercase tracking-widest text-emerald-400 font-mono">
+          STAFF OPERATIONS // ORDER FULFILLMENT
+        </span>
+        <h1 className="font-display font-black text-2xl sm:text-3xl text-white mt-1">
+          Cổng Xử Lý Đơn Hàng & In Hóa Đơn
+        </h1>
+        <p className="text-xs text-zinc-400 mt-1">
+          Xác nhận đơn, cập nhật tiến độ vận chuyển và xuất phiếu đóng gói.
+        </p>
       </div>
 
-      {/* KPI Stats Bar */}
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-        <div className="bg-white border-2 border-black p-4 shadow-[4px_4px_0px_#000]">
-          <span className="text-[10px] font-mono font-bold text-neutral-500 uppercase">Chờ xác nhận</span>
-          <div className="font-display font-black text-2xl text-amber-600">
-            {orders.filter(o => o.orderStatus === 'Pending').length} ĐƠN
-          </div>
+      {/* 2. Quick Metrics */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="bg-white rounded-3xl border border-zinc-200/80 p-6 shadow-sm space-y-2">
+          <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Chờ Xác Nhận</span>
+          <p className="font-display font-black text-3xl text-amber-500">
+            {orders.filter(o => o.orderStatus === 'Pending').length} Đơn
+          </p>
         </div>
-        <div className="bg-white border-2 border-black p-4 shadow-[4px_4px_0px_#000]">
-          <span className="text-[10px] font-mono font-bold text-neutral-500 uppercase">Đang vận chuyển</span>
-          <div className="font-display font-black text-2xl text-purple-600">
-            {orders.filter(o => o.orderStatus === 'Shipping').length} ĐƠN
-          </div>
+
+        <div className="bg-white rounded-3xl border border-zinc-200/80 p-6 shadow-sm space-y-2">
+          <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Đang Vận Chuyển</span>
+          <p className="font-display font-black text-3xl text-purple-600">
+            {orders.filter(o => o.orderStatus === 'Shipping').length} Đơn
+          </p>
         </div>
-        <div className="bg-white border-2 border-black p-4 shadow-[4px_4px_0px_#000]">
-          <span className="text-[10px] font-mono font-bold text-neutral-500 uppercase">Đã hoàn thành</span>
-          <div className="font-display font-black text-2xl text-emerald-600">
-            {orders.filter(o => o.orderStatus === 'Delivered').length} ĐƠN
-          </div>
+
+        <div className="bg-white rounded-3xl border border-zinc-200/80 p-6 shadow-sm space-y-2">
+          <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Đã Hoàn Thành</span>
+          <p className="font-display font-black text-3xl text-emerald-600">
+            {orders.filter(o => o.orderStatus === 'Delivered').length} Đơn
+          </p>
         </div>
-        <div className="bg-white border-2 border-black p-4 shadow-[4px_4px_0px_#000]">
-          <span className="text-[10px] font-mono font-bold text-neutral-500 uppercase">Tổng doanh thu đơn</span>
-          <div className="font-display font-black text-2xl text-[#ff4d00]">
+
+        <div className="bg-white rounded-3xl border border-zinc-200/80 p-6 shadow-sm space-y-2">
+          <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Tổng Doanh Thu Đơn</span>
+          <p className="font-display font-black text-2xl text-zinc-950">
             {formatCurrency(orders.reduce((acc, o) => acc + (o.orderStatus !== 'Cancelled' ? o.totalAmount : 0), 0))}
-          </div>
+          </p>
         </div>
       </div>
 
-      {/* Controls: Search & Filter */}
-      <div className="bg-white border-2 border-black p-4 shadow-[4px_4px_0px_#000] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="relative flex-1 max-w-md">
+      {/* 3. Search & Filter Bar */}
+      <div className="bg-white rounded-3xl border border-zinc-200 p-4 sm:p-6 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+        
+        {/* Search */}
+        <div className="relative w-full md:w-80">
+          <Search className="w-4 h-4 text-zinc-400 absolute left-3.5 top-3.5" />
           <input
             type="text"
             placeholder="Tìm theo Mã đơn, Họ tên khách, SĐT..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="neo-input text-xs pl-9"
+            className="w-full bg-zinc-50 border border-zinc-200 rounded-xl pl-10 pr-4 py-2.5 text-xs outline-none focus:border-zinc-950"
           />
-          <Search className="w-4 h-4 absolute left-3 top-3.5 text-neutral-400" />
         </div>
 
-        <div className="flex items-center gap-2 overflow-x-auto">
-          {['All', 'Pending', 'Confirmed', 'Shipping', 'Delivered', 'Cancelled'].map((st) => (
+        {/* Filter Buttons */}
+        <div className="flex flex-wrap gap-1.5 w-full md:w-auto">
+          {['ALL', 'PENDING', 'CONFIRMED', 'SHIPPING', 'DELIVERED', 'CANCELLED'].map((st) => (
             <button
               key={st}
-              onClick={() => setSelectedStatus(st)}
-              className={`px-3 py-1.5 font-display font-bold text-xs uppercase border-2 border-black whitespace-nowrap transition-all ${
-                selectedStatus === st
-                  ? 'bg-black text-[#00ff66] shadow-[2px_2px_0px_#000]'
-                  : 'bg-white hover:bg-neutral-100'
+              onClick={() => setFilterStatus(st)}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                filterStatus === st 
+                  ? 'bg-zinc-950 text-white shadow-xs' 
+                  : 'bg-zinc-50 border border-zinc-200 text-zinc-600 hover:bg-zinc-100'
               }`}
             >
-              {st === 'All' ? 'Tất cả' : st}
+              {st === 'ALL' ? 'TẤT CẢ' : st}
             </button>
           ))}
         </div>
+
       </div>
 
-      {/* Orders Table */}
-      <div className="bg-white border-2 border-black shadow-[6px_6px_0px_#000] overflow-hidden">
+      {/* 4. Orders Data Table */}
+      <div className="bg-white rounded-3xl border border-zinc-200 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs border-collapse">
-            <thead>
-              <tr className="bg-black text-white font-display uppercase tracking-wider text-[11px] border-b-2 border-black">
+          <table className="w-full text-left text-xs">
+            <thead className="bg-zinc-950 text-white uppercase text-[11px] font-mono tracking-wider">
+              <tr>
                 <th className="p-4">Mã Đơn</th>
                 <th className="p-4">Khách Hàng</th>
                 <th className="p-4">Ngày Đặt</th>
@@ -146,151 +159,133 @@ export const StaffDashboard = () => {
                 <th className="p-4 text-right">Thao Tác Xử Lý</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-neutral-200">
-              {filteredOrders.map((order) => {
-                const statusInfo = getOrderStatusInfo(order.orderStatus);
-                const paymentInfo = getPaymentStatusInfo(order.paymentStatus);
+            <tbody className="divide-y divide-zinc-100">
+              {loading ? (
+                <tr>
+                  <td colSpan="7" className="p-10 text-center text-zinc-400">Đang tải dữ liệu đơn hàng...</td>
+                </tr>
+              ) : filteredOrders.length === 0 ? (
+                <tr>
+                  <td colSpan="7" className="p-10 text-center text-zinc-400">Không có đơn hàng nào khớp với điều kiện lọc.</td>
+                </tr>
+              ) : (
+                filteredOrders.map((order) => {
+                  const statusInfo = getOrderStatusInfo(order.orderStatus);
+                  const payInfo = getPaymentStatusInfo(order.paymentStatus || 'Paid');
 
-                return (
-                  <tr key={order.orderId} className="hover:bg-neutral-50 transition-colors">
-                    <td className="p-4 font-mono font-black">{order.orderId}</td>
-                    <td className="p-4">
-                      <div className="font-bold text-neutral-900">{order.customerName}</div>
-                      <div className="text-[10px] font-mono text-neutral-500">{order.customerPhone}</div>
-                    </td>
-                    <td className="p-4 font-mono text-neutral-600">{formatDate(order.placedAt)}</td>
-                    <td className="p-4 font-display font-black text-neutral-900">
-                      {formatCurrency(order.totalAmount)}
-                    </td>
-                    <td className="p-4">
-                      <span className="font-bold uppercase text-neutral-800">{order.paymentMethod}</span>
-                      <span className={`block text-[10px] font-bold ${paymentInfo.color} px-1 rounded-xs w-max mt-0.5`}>
-                        {paymentInfo.label}
-                      </span>
-                    </td>
-                    <td className="p-4">
-                      <span className={`neo-badge text-[10px] ${statusInfo.color}`}>
-                        {statusInfo.label}
-                      </span>
-                    </td>
-                    <td className="p-4 text-right space-x-1.5 whitespace-nowrap">
-                      {order.orderStatus === 'Pending' && (
+                  return (
+                    <tr key={order.orderId} className="hover:bg-zinc-50/80 transition-colors">
+                      <td className="p-4 font-mono font-bold text-zinc-950">{order.orderId}</td>
+                      <td className="p-4">
+                        <p className="font-bold text-zinc-900">{order.customerName}</p>
+                        <p className="text-[11px] text-zinc-400 font-mono">{order.phone || '0901112223'}</p>
+                      </td>
+                      <td className="p-4 text-zinc-500 font-mono">{formatDate(order.createdAt)}</td>
+                      <td className="p-4 font-display font-bold text-zinc-950">{formatCurrency(order.totalAmount)}</td>
+                      <td className="p-4">
+                        <span className="font-bold block text-zinc-800">{order.paymentMethod}</span>
+                        <span className="text-[10px] text-emerald-600 font-bold uppercase">{payInfo.label}</span>
+                      </td>
+                      <td className="p-4">
+                        <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold ${statusInfo.color} ${statusInfo.bg}`}>
+                          {statusInfo.label}
+                        </span>
+                      </td>
+                      <td className="p-4 text-right space-x-2">
+                        {order.orderStatus === 'Pending' && (
+                          <button
+                            onClick={() => handleUpdateStatus(order.orderId, 'Confirmed')}
+                            className="luxury-btn-accent text-[11px] px-3 py-1.5 rounded-xl inline-flex"
+                          >
+                            Xác Nhận
+                          </button>
+                        )}
+                        {order.orderStatus === 'Confirmed' && (
+                          <button
+                            onClick={() => handleUpdateStatus(order.orderId, 'Shipping')}
+                            className="bg-purple-600 hover:bg-purple-700 text-white font-bold text-[11px] px-3 py-1.5 rounded-xl inline-flex"
+                          >
+                            Giao Hàng
+                          </button>
+                        )}
+                        {order.orderStatus === 'Shipping' && (
+                          <button
+                            onClick={() => handleUpdateStatus(order.orderId, 'Delivered')}
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] px-3 py-1.5 rounded-xl inline-flex"
+                          >
+                            Đã Giao
+                          </button>
+                        )}
+
                         <button
-                          onClick={() => handleUpdateStatus(order.orderId, 'Confirmed')}
-                          className="px-2.5 py-1.5 bg-blue-600 text-white font-bold border border-black shadow-[1px_1px_0px_#000] hover:bg-blue-700 text-[11px]"
+                          onClick={() => setSelectedOrderForBill(order)}
+                          className="luxury-btn-secondary text-[11px] px-3 py-1.5 rounded-xl inline-flex items-center gap-1"
                         >
-                          Xác Nhận
+                          <Printer className="w-3 h-3" />
+                          <span>In Bill</span>
                         </button>
-                      )}
-                      {order.orderStatus === 'Confirmed' && (
-                        <button
-                          onClick={() => handleUpdateStatus(order.orderId, 'Shipping')}
-                          className="px-2.5 py-1.5 bg-purple-600 text-white font-bold border border-black shadow-[1px_1px_0px_#000] hover:bg-purple-700 text-[11px]"
-                        >
-                          Giao Shipper
-                        </button>
-                      )}
-                      {order.orderStatus === 'Shipping' && (
-                        <button
-                          onClick={() => handleUpdateStatus(order.orderId, 'Delivered')}
-                          className="px-2.5 py-1.5 bg-emerald-600 text-white font-bold border border-black shadow-[1px_1px_0px_#000] hover:bg-emerald-700 text-[11px]"
-                        >
-                          Đã Giao
-                        </button>
-                      )}
-                      <button
-                        onClick={() => setSelectedOrderForBill(order)}
-                        className="px-2.5 py-1.5 bg-white text-black font-bold border border-black shadow-[1px_1px_0px_#000] hover:bg-neutral-100 text-[11px] inline-flex items-center gap-1"
-                      >
-                        <Printer className="w-3.5 h-3.5" /> In Bill
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
             </tbody>
           </table>
         </div>
       </div>
 
-      {/* Printable Invoice Modal */}
+      {/* 5. Bill Printing Modal */}
       {selectedOrderForBill && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-white border-3 border-black p-8 max-w-2xl w-full shadow-[10px_10px_0px_#000] max-h-[90vh] overflow-y-auto space-y-6">
-            
-            <div className="flex justify-between items-start border-b-2 border-black pb-4">
-              <div>
-                <span className="font-display font-black text-2xl tracking-tighter">
-                  NOVA<span className="text-[#00ff66]">.</span>SYS
-                </span>
-                <p className="text-xs text-neutral-500 font-mono">12 Hai Bà Trưng, Hoàn Kiếm, Hà Nội • Hotline: 1900 8888</p>
-              </div>
-              <div className="text-right">
-                <h3 className="font-display font-black text-lg uppercase">PHIẾU GIAO HÀNG / BILL</h3>
-                <span className="font-mono text-xs font-bold text-neutral-600">MÃ: #{selectedOrderForBill.orderId}</span>
-              </div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl max-w-md w-full p-8 space-y-6 shadow-2xl relative">
+            <button
+              onClick={() => setSelectedOrderForBill(null)}
+              className="absolute top-4 right-4 p-2 text-zinc-400 hover:text-black rounded-full"
+            >
+              <X className="w-4 h-4" />
+            </button>
+
+            <div className="text-center space-y-1 border-b border-zinc-100 pb-4">
+              <h2 className="font-display font-black text-xl text-zinc-950">NOVA APPAREL</h2>
+              <p className="text-xs text-zinc-500 font-mono">HÓA ĐƠN BÁN LẺ & PHIẾU XUẤT KHO</p>
+              <p className="text-[11px] font-mono text-zinc-400">Mã đơn: #{selectedOrderForBill.orderId}</p>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 text-xs">
-              <div>
-                <strong className="block text-neutral-500">Người nhận:</strong>
-                <p className="font-bold text-black">{selectedOrderForBill.customerName} ({selectedOrderForBill.customerPhone})</p>
-                <p>{selectedOrderForBill.shippingAddress}</p>
-              </div>
-              <div>
-                <strong className="block text-neutral-500">Ngày đặt:</strong>
-                <p className="font-mono">{formatDate(selectedOrderForBill.placedAt)}</p>
-                <strong className="block text-neutral-500 mt-1">Phương thức thanh toán:</strong>
-                <p className="font-bold uppercase text-blue-600">{selectedOrderForBill.paymentMethod} ({selectedOrderForBill.paymentStatus})</p>
-              </div>
+            <div className="space-y-2 text-xs text-zinc-600">
+              <p><strong>Khách hàng:</strong> {selectedOrderForBill.customerName}</p>
+              <p><strong>Địa chỉ:</strong> {selectedOrderForBill.address || 'Hà Nội'}</p>
+              <p><strong>Phương thức:</strong> {selectedOrderForBill.paymentMethod}</p>
             </div>
 
-            <table className="w-full text-left text-xs border-t-2 border-b-2 border-black">
-              <thead>
-                <tr className="border-b border-neutral-300">
-                  <th className="py-2">Sản phẩm</th>
-                  <th className="py-2">Biến thể</th>
-                  <th className="py-2">SL</th>
-                  <th className="py-2 text-right">Đơn giá</th>
-                  <th className="py-2 text-right">Thành tiền</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-neutral-200">
-                {selectedOrderForBill.items?.map((item, idx) => (
-                  <tr key={idx}>
-                    <td className="py-2 font-bold">{item.productName || item.name}</td>
-                    <td className="py-2 font-mono text-neutral-600">{item.sizeName} - {item.colorName}</td>
-                    <td className="py-2 font-mono">{item.quantity}</td>
-                    <td className="py-2 text-right font-mono">{formatCurrency(item.unitPrice)}</td>
-                    <td className="py-2 text-right font-mono font-bold">{formatCurrency(item.unitPrice * item.quantity)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-
-            <div className="flex justify-between items-center text-sm font-display font-black pt-2">
-              <span>TỔNG TIỀN THANH TOÁN:</span>
-              <span className="text-xl text-[#ff4d00]">{formatCurrency(selectedOrderForBill.totalAmount)}</span>
+            <div className="space-y-2 border-t border-b border-zinc-100 py-3 text-xs">
+              {selectedOrderForBill.items?.map((it, i) => (
+                <div key={i} className="flex justify-between">
+                  <span>{it.name} (x{it.quantity})</span>
+                  <span className="font-mono font-bold">{formatCurrency(it.unitPrice * it.quantity)}</span>
+                </div>
+              ))}
             </div>
 
-            <div className="flex gap-3 pt-4 border-t-2 border-black">
+            <div className="flex justify-between items-baseline pt-1 text-sm font-bold">
+              <span>Tổng Tiền:</span>
+              <span className="font-display font-black text-xl text-emerald-600">
+                {formatCurrency(selectedOrderForBill.totalAmount)}
+              </span>
+            </div>
+
+            <div className="flex gap-3 pt-2">
               <button
-                onClick={() => window.print()}
-                className="flex-1 py-3 neo-btn neo-btn-neon text-xs flex items-center justify-center gap-2"
+                onClick={() => { window.print(); setSelectedOrderForBill(null); }}
+                className="flex-1 luxury-btn-accent text-xs py-3 justify-center"
               >
-                <Printer className="w-4 h-4" /> In Phiếu Giao Hàng
-              </button>
-              <button
-                onClick={() => setSelectedOrderForBill(null)}
-                className="py-3 px-6 neo-btn neo-btn-secondary text-xs"
-              >
-                Đóng
+                <Printer className="w-4 h-4" />
+                <span>In Hóa Đơn Ngay</span>
               </button>
             </div>
-
           </div>
         </div>
       )}
+
     </div>
   );
 };

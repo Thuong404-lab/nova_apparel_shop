@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { 
-  TrendingUp, 
   DollarSign, 
   ShoppingBag, 
   Users, 
-  Shield, 
+  TrendingUp, 
   ArrowUpRight, 
-  PieChart, 
   Calendar,
-  Sparkles
+  Sparkles,
+  ArrowRight
 } from 'lucide-react';
 import { adminApi } from '../../services/api';
 import { formatCurrency } from '../../utils/formatters';
@@ -18,148 +18,158 @@ export const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchStats = async () => {
+    async function loadStats() {
       setLoading(true);
       try {
         const res = await adminApi.getStats();
-        if (res.success) {
-          setStats(res.data);
-        }
+        if (res.success) setStats(res.data);
       } finally {
         setLoading(false);
       }
-    };
-    fetchStats();
+    }
+    loadStats();
   }, []);
 
   if (loading || !stats) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-20 text-center font-display font-bold uppercase text-xs">
-        Đang tải báo cáo thống kê quản trị...
+      <div className="max-w-7xl mx-auto px-4 py-16 animate-pulse space-y-8">
+        <div className="h-10 w-64 bg-zinc-200 rounded-xl"></div>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          {[1, 2, 3, 4].map(n => <div key={n} className="h-32 bg-zinc-200 rounded-3xl"></div>)}
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-      {/* Header Banner */}
-      <div className="bg-gradient-to-r from-purple-950 via-neutral-900 to-black text-white p-6 border-3 border-black shadow-[6px_6px_0px_#7928ca] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
+      
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
-          <span className="font-mono text-xs text-[#00ff66] uppercase tracking-widest block mb-1">
-            EXECUTIVE SUITE // ADMIN ANALYTICS & INSIGHTS
+          <span className="text-xs font-bold uppercase tracking-widest text-purple-600 font-mono">
+            ADMIN ANALYTICS // REVENUE & GROWTH
           </span>
-          <h1 className="font-display font-black text-2xl sm:text-4xl uppercase tracking-tight">
-            BẢNG QUẢN TRỊ TỔNG QUAN
+          <h1 className="font-display font-black text-3xl sm:text-4xl text-zinc-950 mt-1">
+            Báo Cáo Hoạt Động Hệ Thống
           </h1>
         </div>
-        <div className="flex items-center gap-2 font-mono text-xs text-neutral-300">
-          <Calendar className="w-4 h-4 text-[#00ff66]" />
-          <span>DỮ LIỆU THÁNG 08/2026</span>
+        <div className="flex items-center gap-2 px-3.5 py-1.5 bg-white border border-zinc-200 rounded-xl text-xs font-mono font-medium shadow-xs">
+          <Calendar className="w-3.5 h-3.5 text-zinc-500" />
+          <span>Cập nhật thời gian thực 2026</span>
         </div>
       </div>
 
-      {/* KPI Cards */}
+      {/* 4 Stat Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white border-2 border-black p-6 shadow-[5px_5px_0px_#000] space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-mono font-bold text-neutral-500 uppercase">Tổng Doanh Thu</span>
-            <div className="w-8 h-8 bg-black text-[#00ff66] flex items-center justify-center border border-black">
-              <DollarSign className="w-4 h-4" />
+        
+        <motion.div 
+          whileHover={{ y: -4 }}
+          className="bg-white rounded-3xl border border-zinc-200/80 p-6 shadow-sm space-y-4"
+        >
+          <div className="flex justify-between items-start">
+            <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Tổng Doanh Thu</span>
+            <div className="p-2.5 bg-emerald-50 text-emerald-600 rounded-2xl">
+              <DollarSign className="w-5 h-5" />
             </div>
           </div>
-          <div className="font-display font-black text-2xl sm:text-3xl text-black">
-            {formatCurrency(stats.totalRevenue)}
+          <div>
+            <p className="font-display font-black text-2xl sm:text-3xl text-zinc-950">
+              {formatCurrency(stats.totalRevenue)}
+            </p>
+            <p className="text-xs text-emerald-600 font-semibold mt-1 flex items-center gap-1">
+              <ArrowUpRight className="w-3.5 h-3.5" /> +24.8% so với cùng kỳ
+            </p>
           </div>
-          <span className="text-[10px] font-mono text-emerald-600 font-bold block">
-            ↑ +18.4% so với tháng trước
-          </span>
-        </div>
+        </motion.div>
 
-        <div className="bg-white border-2 border-black p-6 shadow-[5px_5px_0px_#000] space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-mono font-bold text-neutral-500 uppercase">Doanh Thu Tháng Này</span>
-            <div className="w-8 h-8 bg-[#00ff66] text-black flex items-center justify-center border border-black">
-              <TrendingUp className="w-4 h-4" />
+        <motion.div 
+          whileHover={{ y: -4 }}
+          className="bg-white rounded-3xl border border-zinc-200/80 p-6 shadow-sm space-y-4"
+        >
+          <div className="flex justify-between items-start">
+            <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Doanh Thu Tháng Này</span>
+            <div className="p-2.5 bg-purple-50 text-purple-600 rounded-2xl">
+              <TrendingUp className="w-5 h-5" />
             </div>
           </div>
-          <div className="font-display font-black text-2xl sm:text-3xl text-black">
-            {formatCurrency(stats.monthlyRevenue)}
+          <div>
+            <p className="font-display font-black text-2xl sm:text-3xl text-zinc-950">
+              {formatCurrency(stats.monthlyRevenue)}
+            </p>
+            <p className="text-xs text-purple-600 font-semibold mt-1 flex items-center gap-1">
+              <ArrowUpRight className="w-3.5 h-3.5" /> Vượt 18% KPI đề ra
+            </p>
           </div>
-          <span className="text-[10px] font-mono text-emerald-600 font-bold block">
-            ↑ +24.2% mục tiêu tháng
-          </span>
-        </div>
+        </motion.div>
 
-        <div className="bg-white border-2 border-black p-6 shadow-[5px_5px_0px_#000] space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-mono font-bold text-neutral-500 uppercase">Tổng Đơn Hàng</span>
-            <div className="w-8 h-8 bg-[#ff4d00] text-white flex items-center justify-center border border-black">
-              <ShoppingBag className="w-4 h-4" />
+        <motion.div 
+          whileHover={{ y: -4 }}
+          className="bg-white rounded-3xl border border-zinc-200/80 p-6 shadow-sm space-y-4"
+        >
+          <div className="flex justify-between items-start">
+            <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Tổng Số Đơn Hàng</span>
+            <div className="p-2.5 bg-blue-50 text-blue-600 rounded-2xl">
+              <ShoppingBag className="w-5 h-5" />
             </div>
           </div>
-          <div className="font-display font-black text-2xl sm:text-3xl text-black">
-            {stats.totalOrders} ĐƠN
+          <div>
+            <p className="font-display font-black text-2xl sm:text-3xl text-zinc-950">
+              {stats.totalOrders} đơn
+            </p>
+            <p className="text-xs text-blue-600 font-semibold mt-1">
+              Tỷ lệ hoàn tất giao 97.2%
+            </p>
           </div>
-          <span className="text-[10px] font-mono text-blue-600 font-bold block">
-            Tỉ lệ hoàn thành: 96.8%
-          </span>
-        </div>
+        </motion.div>
 
-        <div className="bg-white border-2 border-black p-6 shadow-[5px_5px_0px_#000] space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-mono font-bold text-neutral-500 uppercase">Khách Hàng Đăng Ký</span>
-            <div className="w-8 h-8 bg-purple-600 text-white flex items-center justify-center border border-black">
-              <Users className="w-4 h-4" />
+        <motion.div 
+          whileHover={{ y: -4 }}
+          className="bg-white rounded-3xl border border-zinc-200/80 p-6 shadow-sm space-y-4"
+        >
+          <div className="flex justify-between items-start">
+            <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Khách Hàng Thành Viên</span>
+            <div className="p-2.5 bg-amber-50 text-amber-600 rounded-2xl">
+              <Users className="w-5 h-5" />
             </div>
           </div>
-          <div className="font-display font-black text-2xl sm:text-3xl text-black">
-            {stats.totalCustomers}
+          <div>
+            <p className="font-display font-black text-2xl sm:text-3xl text-zinc-950">
+              {stats.activeCustomers} user
+            </p>
+            <p className="text-xs text-amber-600 font-semibold mt-1">
+              +142 khách hàng mới tuần này
+            </p>
           </div>
-          <span className="text-[10px] font-mono text-purple-600 font-bold block">
-            +142 khách hàng tuần này
-          </span>
-        </div>
+        </motion.div>
+
       </div>
 
-      {/* Analytics Charts Grid */}
+      {/* Revenue Trend & Top Products */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         
-        {/* Left: Weekly Revenue Trend (8 Cols) */}
-        <div className="lg:col-span-8 bg-white border-2 border-black p-6 shadow-[6px_6px_0px_#000] space-y-6">
-          <div className="flex items-center justify-between pb-4 border-b-2 border-black">
-            <div>
-              <h3 className="font-display font-black text-lg uppercase">
-                DOANH THU THEO TUẦN (7 NGÀY GẦN NHẤT)
-              </h3>
-              <p className="text-xs text-neutral-500 font-mono">ĐƠN VỊ TÍNH: TRIỆU ĐỒNG (VNĐ)</p>
-            </div>
-            <span className="neo-badge bg-[#00ff66] text-black text-xs">
-              LIVE STATS
-            </span>
+        {/* Revenue Bars (7 cols) */}
+        <div className="lg:col-span-7 bg-white rounded-3xl border border-zinc-200/80 p-6 sm:p-8 shadow-sm space-y-6">
+          <div className="flex justify-between items-center border-b border-zinc-100 pb-4">
+            <h3 className="font-display font-bold text-lg text-zinc-950">Biểu Đồ Doanh Thu 6 Tháng</h3>
+            <span className="text-xs font-mono text-zinc-400">Đơn vị: VNĐ</span>
           </div>
 
-          {/* Styled Bar Chart */}
           <div className="space-y-4 pt-2">
-            {stats.salesOverTime?.map((item, idx) => {
-              const maxRev = 20000000;
+            {stats.revenueTrend?.map((item) => {
+              const maxRev = 100000000;
               const percent = Math.min(100, (item.revenue / maxRev) * 100);
               return (
-                <div key={idx} className="space-y-1">
-                  <div className="flex justify-between text-xs font-mono font-bold">
-                    <span>{item.day} ({item.orders} đơn)</span>
-                    <span className="font-display text-black">{formatCurrency(item.revenue)}</span>
+                <div key={item.month} className="space-y-1.5">
+                  <div className="flex justify-between text-xs font-semibold">
+                    <span className="text-zinc-600 font-mono">{item.month} (Tháng {item.month.replace('T', '')})</span>
+                    <span className="font-display font-bold text-zinc-950">{formatCurrency(item.revenue)}</span>
                   </div>
-                  <div className="w-full bg-neutral-100 h-6 border-2 border-black relative overflow-hidden shadow-[2px_2px_0px_#000]">
-                    <div
-                      className="bg-black h-full transition-all duration-500 flex items-center justify-end pr-2"
+                  <div className="w-full h-3 bg-zinc-100 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-gradient-to-r from-purple-500 to-emerald-400 rounded-full transition-all duration-700"
                       style={{ width: `${percent}%` }}
-                    >
-                      {percent > 20 && (
-                        <span className="text-[10px] font-mono font-black text-[#00ff66]">
-                          {Math.round(percent)}%
-                        </span>
-                      )}
-                    </div>
+                    />
                   </div>
                 </div>
               );
@@ -167,75 +177,30 @@ export const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* Right: Category Revenue Share (4 Cols) */}
-        <div className="lg:col-span-4 bg-white border-2 border-black p-6 shadow-[6px_6px_0px_#000] space-y-6">
-          <div className="pb-4 border-b-2 border-black">
-            <h3 className="font-display font-black text-lg uppercase">
-              TỈ TRỌNG DOANH MỤC
-            </h3>
-            <p className="text-xs text-neutral-500 font-mono">PHÂN BỔ DOANH SỐ</p>
+        {/* Top Selling Products (5 cols) */}
+        <div className="lg:col-span-5 bg-white rounded-3xl border border-zinc-200/80 p-6 sm:p-8 shadow-sm space-y-6">
+          <div className="flex justify-between items-center border-b border-zinc-100 pb-4">
+            <h3 className="font-display font-bold text-lg text-zinc-950">Top Sản Phẩm Doanh Thu Cao</h3>
+            <span className="text-xs font-mono text-emerald-600 font-bold">BEST SELLERS</span>
           </div>
 
           <div className="space-y-4">
-            {stats.categoryShare?.map((cat, idx) => (
-              <div key={idx} className="space-y-1">
-                <div className="flex justify-between text-xs font-display font-bold">
-                  <span className="flex items-center gap-2">
-                    <span className="w-3 h-3 border border-black inline-block" style={{ backgroundColor: cat.color }} />
-                    {cat.name}
-                  </span>
-                  <span className="font-mono">{cat.value}%</span>
+            {stats.topProducts?.map((tp, idx) => (
+              <div key={idx} className="flex items-center justify-between p-3.5 rounded-2xl bg-zinc-50 border border-zinc-100">
+                <div className="space-y-0.5">
+                  <p className="font-bold text-xs text-zinc-900 line-clamp-1">{tp.name}</p>
+                  <p className="text-[11px] text-zinc-500">Đã bán: <strong className="text-zinc-800">{tp.sales} chiếc</strong></p>
                 </div>
-                <div className="w-full bg-neutral-100 h-3 border border-black overflow-hidden">
-                  <div
-                    className="h-full"
-                    style={{ width: `${cat.value}%`, backgroundColor: cat.color }}
-                  />
-                </div>
+                <span className="font-display font-black text-sm text-emerald-600">
+                  {formatCurrency(tp.revenue)}
+                </span>
               </div>
             ))}
           </div>
-
-          <div className="p-4 bg-neutral-50 border-2 border-black text-xs text-neutral-700 leading-relaxed font-medium">
-            💡 <strong>Tops & Tees</strong> và <strong>Outerwear</strong> hiện đang là 2 dòng sản phẩm chủ lực đóng góp hơn 70% tổng doanh thu cửa hàng.
-          </div>
         </div>
 
       </div>
 
-      {/* Top Selling Products Table */}
-      <div className="bg-white border-2 border-black shadow-[6px_6px_0px_#000] p-6 space-y-4">
-        <div className="flex items-center justify-between pb-3 border-b-2 border-black">
-          <h3 className="font-display font-black text-lg uppercase">
-            TOP 5 SẢN PHẨM BÁN CHẠY NHẤT
-          </h3>
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs border-collapse">
-            <thead>
-              <tr className="bg-black text-white font-display uppercase tracking-wider text-[11px]">
-                <th className="p-3">Hạng</th>
-                <th className="p-3">Tên Sản Phẩm</th>
-                <th className="p-3 text-center">Số Lượng Đã Bán</th>
-                <th className="p-3 text-right">Tổng Doanh Thu</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-neutral-200">
-              {stats.topProducts?.map((tp, idx) => (
-                <tr key={tp.id} className="hover:bg-neutral-50">
-                  <td className="p-3 font-display font-black text-sm">#{idx + 1}</td>
-                  <td className="p-3 font-bold text-neutral-900">{tp.name}</td>
-                  <td className="p-3 text-center font-mono font-black text-blue-600">{tp.sales} SP</td>
-                  <td className="p-3 text-right font-display font-black text-sm text-[#ff4d00]">
-                    {formatCurrency(tp.revenue)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
     </div>
   );
 };

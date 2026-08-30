@@ -1,231 +1,195 @@
-import React, { useState, useEffect } from 'react';
-import { X, Star, ShoppingBag, Heart, Check, ArrowRight } from 'lucide-react';
+﻿import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X, ShoppingBag, Heart, Star, Check, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { formatCurrency } from '../../utils/formatters';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
+import { formatCurrency } from '../../utils/formatters';
+import confetti from 'canvas-confetti';
 
 export const ProductQuickViewModal = ({ product, isOpen, onClose }) => {
-  const [selectedVariant, setSelectedVariant] = useState(null);
-  const [quantity, setQuantity] = useState(1);
-  const [activeImageIndex, setActiveImageIndex] = useState(0);
-
   const { addItem } = useCart();
-  const { toggleWishlist, isFavorite } = useWishlist();
+  const { isInWishlist, toggleWishlist } = useWishlist();
 
-  useEffect(() => {
-    if (product && product.variants?.length > 0) {
-      setSelectedVariant(product.variants[0]);
-      setQuantity(1);
-      setActiveImageIndex(0);
-    }
-  }, [product]);
+  const [selectedColor, setSelectedColor] = useState(product?.variants?.[0]?.colorName);
+  const [selectedSize, setSelectedSize] = useState(product?.variants?.[0]?.sizeName);
+  const [quantity, setQuantity] = useState(1);
+  const [selectedImage, setSelectedImage] = useState(0);
 
   if (!isOpen || !product) return null;
 
-  const currentPrice = selectedVariant?.priceOverride || product.basePrice;
-  const availableStock = selectedVariant ? selectedVariant.stockQty - (selectedVariant.reservedQty || 0) : 0;
+  const currentVariant = product.variants?.find(
+    v => v.colorName === selectedColor && v.sizeName === selectedSize
+  ) || product.variants?.[0];
 
-  const handleAddToCart = () => {
-    if (selectedVariant && availableStock > 0) {
-      addItem(product, selectedVariant, quantity);
-      onClose();
-    }
+  const currentPrice = currentVariant?.priceOverride || product.basePrice;
+  const isFavorited = isInWishlist(product.productId);
+
+  const handleAddToCart = (e) => {
+    addItem(product, currentVariant, quantity);
+    
+    // Confetti
+    const rect = e.currentTarget.getBoundingClientRect();
+    confetti({
+      particleCount: 30,
+      spread: 60,
+      origin: {
+        x: (rect.left + rect.width / 2) / window.innerWidth,
+        y: (rect.top + rect.height / 2) / window.innerHeight
+      },
+      colors: ['#00ff66', '#09090b', '#ffffff']
+    });
+
+    onClose();
   };
 
+  const availableColors = Array.from(new Set(product.variants?.map(v => v.colorName) || []));
+  const availableSizes = Array.from(new Set(product.variants?.map(v => v.sizeName) || []));
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
-      <div 
-        className="relative w-full max-w-3xl bg-white border-3 border-black shadow-[10px_10px_0px_#000000] max-h-[90vh] overflow-y-auto"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Close Button */}
-        <button
+    <AnimatePresence>
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        {/* Backdrop */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
           onClick={onClose}
-          className="absolute top-4 right-4 z-20 p-2 bg-white border-2 border-black hover:bg-black hover:text-white transition-all shadow-[2px_2px_0px_#000]"
+          className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        />
+
+        {/* Modal Window */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: 20 }}
+          transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          className="relative w-full max-w-3xl bg-white rounded-3xl overflow-hidden shadow-2xl z-10 grid md:grid-cols-2"
         >
-          <X className="w-5 h-5" />
-        </button>
+          {/* Close Button */}
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 p-2.5 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-600 transition-colors z-20 cursor-pointer"
+          >
+            <X className="w-4 h-4" />
+          </button>
 
-        <div className="grid grid-cols-1 md:grid-cols-2">
-          {/* Left: Gallery */}
-          <div className="p-6 bg-neutral-100 border-b-2 md:border-b-0 md:border-r-2 border-black flex flex-col justify-between">
-            <div className="aspect-[4/5] bg-white border-2 border-black overflow-hidden mb-4 shadow-[3px_3px_0px_#000]">
-              <img
-                src={product.images?.[activeImageIndex] || product.images?.[0]}
-                alt={product.name}
-                className="w-full h-full object-cover"
-              />
-            </div>
-
-            {/* Thumbnails */}
-            {product.images && product.images.length > 1 && (
-              <div className="flex gap-2 overflow-x-auto">
-                {product.images.map((img, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setActiveImageIndex(idx)}
-                    className={`w-16 h-16 border-2 border-black overflow-hidden flex-shrink-0 transition-all ${
-                      activeImageIndex === idx ? 'ring-2 ring-black scale-105' : 'opacity-70 hover:opacity-100'
-                    }`}
-                  >
-                    <img src={img} alt="thumb" className="w-full h-full object-cover" />
-                  </button>
-                ))}
-              </div>
+          {/* Left: Product Image */}
+          <div className="relative aspect-[3/4] bg-zinc-100 overflow-hidden">
+            <img
+              src={product.images?.[selectedImage]?.imageUrl || product.images?.[0]?.imageUrl}
+              alt={product.name}
+              className="w-full h-full object-cover"
+            />
+            {product.tag && (
+              <span className="absolute top-4 left-4 px-3 py-1 bg-zinc-950 text-white text-[11px] font-bold uppercase rounded-full">
+                {product.tag}
+              </span>
             )}
           </div>
 
-          {/* Right: Info & Variant Selector */}
-          <div className="p-6 md:p-8 flex flex-col justify-between">
-            <div>
-              {/* Category & Badge */}
-              <div className="flex items-center justify-between mb-2">
-                <span className="font-mono text-xs uppercase tracking-widest text-neutral-500 font-bold">
-                  {product.categoryName || 'Streetwear'}
-                </span>
-                {product.tag && (
-                  <span className="neo-badge bg-[#00ff66] text-black text-[10px]">
-                    {product.tag}
-                  </span>
-                )}
-              </div>
-
-              {/* Title */}
-              <h2 className="font-display font-black text-xl md:text-2xl leading-tight mb-2">
+          {/* Right: Info & Controls */}
+          <div className="p-6 md:p-8 flex flex-col justify-between space-y-6">
+            <div className="space-y-4">
+              <span className="text-[11px] font-bold uppercase tracking-widest text-emerald-600 font-mono">
+                {product.categoryName}
+              </span>
+              <h2 className="font-display font-black text-xl text-zinc-950 leading-snug">
                 {product.name}
               </h2>
 
-              {/* Rating */}
-              <div className="flex items-center gap-2 mb-4">
-                <div className="flex text-amber-400">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-current" />
-                  ))}
+              <div className="flex items-center gap-2 text-xs">
+                <div className="flex text-amber-500">
+                  <Star className="w-3.5 h-3.5 fill-amber-400" />
                 </div>
-                <span className="text-xs font-bold text-neutral-600">
-                  {product.rating} ({product.reviewCount} đánh giá)
-                </span>
+                <span className="font-bold text-zinc-800">{product.rating || 4.9}</span>
+                <span className="text-zinc-400">({product.reviewCount || 48} đánh giá)</span>
               </div>
 
-              {/* Price */}
-              <div className="p-3 bg-neutral-100 border-2 border-black mb-5 shadow-[2px_2px_0px_#000]">
-                <span className="font-display font-black text-2xl text-black">
-                  {formatCurrency(currentPrice)}
-                </span>
+              <div className="font-display font-black text-2xl text-zinc-950">
+                {formatCurrency(currentPrice)}
               </div>
 
-              {/* Description */}
-              <p className="text-xs text-neutral-600 leading-relaxed mb-6 line-clamp-3">
-                {product.description}
-              </p>
-
-              {/* Variants Selector */}
-              {product.variants && product.variants.length > 0 && (
-                <div className="space-y-4 mb-6">
-                  <div>
-                    <label className="block text-xs font-display font-bold uppercase tracking-wider mb-2">
-                      Chọn Biến Thể (Size - Màu):
-                    </label>
-                    <div className="grid grid-cols-2 gap-2">
-                      {product.variants.map((v) => {
-                        const isSelected = selectedVariant?.variantId === v.variantId;
-                        const inStock = v.stockQty > 0;
-                        return (
-                          <button
-                            key={v.variantId}
-                            onClick={() => setSelectedVariant(v)}
-                            disabled={!inStock}
-                            className={`p-2.5 border-2 border-black text-left flex items-center justify-between text-xs transition-all ${
-                              isSelected
-                                ? 'bg-black text-white shadow-[2px_2px_0px_#00ff66]'
-                                : inStock
-                                ? 'bg-white hover:bg-neutral-50 shadow-[2px_2px_0px_#000]'
-                                : 'bg-neutral-100 text-neutral-400 border-neutral-300 cursor-not-allowed'
-                            }`}
-                          >
-                            <div className="flex items-center gap-2">
-                              <span
-                                className="w-3.5 h-3.5 rounded-full border border-black inline-block"
-                                style={{ backgroundColor: v.hexCode || '#000' }}
-                              />
-                              <span className="font-display font-bold">
-                                {v.sizeName} - {v.colorName}
-                              </span>
-                            </div>
-                            {isSelected && <Check className="w-3.5 h-3.5 text-[#00ff66]" />}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Stock Alert */}
-                  <div className="text-xs font-mono">
-                    Tình trạng kho: {' '}
-                    {availableStock > 0 ? (
-                      <span className="text-emerald-600 font-bold">Còn {availableStock} sản phẩm có sẵn</span>
-                    ) : (
-                      <span className="text-red-600 font-bold">Hết hàng</span>
-                    )}
-                  </div>
+              {/* Color.java Options */}
+              <div className="space-y-2">
+                <span className="text-xs font-bold text-zinc-900 block">Màu sắc:</span>
+                <div className="flex flex-wrap gap-2">
+                  {availableColors.map((col) => {
+                    const isSelected = selectedColor === col;
+                    return (
+                      <button
+                        key={col}
+                        onClick={() => setSelectedColor(col)}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
+                          isSelected ? 'bg-zinc-950 text-white border-zinc-950' : 'border-zinc-200 text-zinc-700 hover:border-zinc-400'
+                        }`}
+                      >
+                        {col}
+                      </button>
+                    );
+                  })}
                 </div>
-              )}
+              </div>
 
-              {/* Quantity Stepper */}
-              <div className="flex items-center gap-3 mb-6">
-                <span className="text-xs font-display font-bold uppercase">Số lượng:</span>
-                <div className="flex items-center border-2 border-black bg-white shadow-[2px_2px_0px_#000]">
-                  <button
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="w-8 h-8 flex items-center justify-center font-bold hover:bg-neutral-100 border-r-2 border-black"
-                  >
-                    -
-                  </button>
-                  <span className="w-10 text-center font-display font-bold text-sm">{quantity}</span>
-                  <button
-                    onClick={() => setQuantity(Math.min(availableStock, quantity + 1))}
-                    disabled={quantity >= availableStock}
-                    className="w-8 h-8 flex items-center justify-center font-bold hover:bg-neutral-100 border-l-2 border-black disabled:opacity-50"
-                  >
-                    +
-                  </button>
+              {/* Size Options */}
+              <div className="space-y-2">
+                <span className="text-xs font-bold text-zinc-900 block">Kích thước (Size):</span>
+                <div className="flex flex-wrap gap-2">
+                  {availableSizes.map((sz) => {
+                    const isSelected = selectedSize === sz;
+                    return (
+                      <button
+                        key={sz}
+                        onClick={() => setSelectedSize(sz)}
+                        className={`w-10 h-10 rounded-xl text-xs font-bold border transition-all flex items-center justify-center cursor-pointer ${
+                          isSelected ? 'bg-zinc-950 text-white border-zinc-950' : 'border-zinc-200 text-zinc-800 hover:border-zinc-400'
+                        }`}
+                      >
+                        {sz}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>
 
-            {/* CTA Buttons */}
-            <div className="space-y-2 pt-4 border-t-2 border-black">
+            {/* Actions */}
+            <div className="space-y-3 pt-4 border-t border-zinc-100">
               <div className="flex gap-2">
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={handleAddToCart}
-                  disabled={availableStock <= 0}
-                  className="flex-1 py-3.5 neo-btn neo-btn-neon text-xs disabled:opacity-50"
+                  className="flex-1 luxury-btn-accent text-xs py-3.5 justify-center"
                 >
-                  <ShoppingBag className="w-4 h-4" /> Thêm Vào Giỏ Hàng
-                </button>
-                <button
-                  onClick={() => toggleWishlist(product.productId, product.name)}
-                  className={`p-3.5 border-2 border-black flex items-center justify-center shadow-[4px_4px_0px_#000] ${
-                    isFavorite(product.productId) ? 'bg-red-500 text-white' : 'bg-white hover:bg-neutral-100'
+                  <ShoppingBag className="w-4 h-4" />
+                  <span>Thêm Vào Giỏ Hàng</span>
+                </motion.button>
+
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => toggleWishlist(product)}
+                  className={`p-3.5 rounded-2xl border transition-colors ${
+                    isFavorited ? 'border-rose-500 bg-rose-50 text-rose-500' : 'border-zinc-200 text-zinc-700 hover:border-zinc-400'
                   }`}
-                  title="Yêu thích"
                 >
-                  <Heart className={`w-4 h-4 ${isFavorite(product.productId) ? 'fill-current' : ''}`} />
-                </button>
+                  <Heart className={`w-4 h-4 ${isFavorited ? 'fill-rose-500' : ''}`} />
+                </motion.button>
               </div>
 
               <Link
                 to={`/product/${product.productId}`}
                 onClick={onClose}
-                className="w-full py-2.5 neo-btn neo-btn-secondary text-xs text-center flex items-center justify-center gap-1.5"
+                className="block text-center text-xs font-semibold text-zinc-600 hover:text-black py-1"
               >
-                Xem Toàn Bộ Chi Tiết & Đánh Giá <ArrowRight className="w-3.5 h-3.5" />
+                Xem chi tiết đầy đủ sản phẩm →
               </Link>
             </div>
+
           </div>
-        </div>
+        </motion.div>
       </div>
-    </div>
+    </AnimatePresence>
   );
 };

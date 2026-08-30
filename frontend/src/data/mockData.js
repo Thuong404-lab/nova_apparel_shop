@@ -1,21 +1,20 @@
-// Mock data mimicking the exact FashionShopDB normalized database structure
+﻿// Mock data with normalized structure & high-fashion imagery for NOVA APPAREL
 
 export const mockCategories = [
-  { categoryId: 'CAT001', name: 'Tops & Tees', slug: 'tops-tees', count: 32, image: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500', description: 'Áo thun, áo phông streetwear, polo thời trang' },
-  { categoryId: 'CAT002', name: 'Outerwear', slug: 'outerwear', count: 18, image: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500', description: 'Áo khoác da, jacket gió, hoodie và bomber cao cấp' },
-  { categoryId: 'CAT003', name: 'Accessories', slug: 'accessories', count: 24, image: 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=500', description: 'Túi canvas, nón lưỡi trai, thắt lưng, phụ kiện' },
-  { categoryId: 'CAT004', name: 'Dresses & Skirts', slug: 'dresses-skirts', count: 15, image: 'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=500', description: 'Chân váy chữ A, xếp ly, váy đầm thiết kế' },
-  { categoryId: 'CAT005', name: 'Pants & Jeans', slug: 'pants-jeans', count: 20, image: 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=500', description: 'Quần tây âu ống suông, jeans baggy wash xám' }
+  { categoryId: 'CAT001', name: 'Áo Thun (Tops & Tees)', slug: 'tops-tees', count: 32, image: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800', description: 'Áo thun, áo phông streetwear, polo thời trang form rộng' },
+  { categoryId: 'CAT002', name: 'Áo Khoác (Outerwear)', slug: 'outerwear', count: 18, image: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800', description: 'Áo khoác biker da, varsity jacket, hoodie và bomber cao cấp' },
+  { categoryId: 'CAT003', name: 'Quần & Jeans (Bottoms)', slug: 'pants-jeans', count: 20, image: 'https://images.unsplash.com/photo-1517445312882-bc9910d016b7?w=800', description: 'Quần túi hộp cargo tactical, jeans baggy wash xám' },
+  { categoryId: 'CAT004', name: 'Đầm & Váy (Dresses)', slug: 'dresses-skirts', count: 15, image: 'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=800', description: 'Chân váy xếp ly, đầm bodycon phong cách Cyberpunk' },
+  { categoryId: 'CAT005', name: 'Phụ Kiện (Accessories)', slug: 'accessories', count: 24, image: 'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=800', description: 'Túi đeo chéo canvas, mũ lưỡi trai tag kim loại NOVA' }
 ];
 
 export const mockColors = [
-  { colorId: 'COL001', colorName: 'Đen (Black)', hexCode: '#000000' },
-  { colorId: 'COL002', colorName: 'Trắng (White)', hexCode: '#FFFFFF' },
-  { colorId: 'COL003', colorName: 'Be (Beige)', hexCode: '#F5F5DC' },
-  { colorId: 'COL004', colorName: 'Xám (Grey)', hexCode: '#808080' },
-  { colorId: 'COL005', colorName: 'Xanh Navy', hexCode: '#000080' },
-  { colorId: 'COL006', colorName: 'Hồng (Pink)', hexCode: '#FFC0CB' },
-  { colorId: 'COL007', colorName: 'Đỏ Nâu (Brown)', hexCode: '#8B0000' }
+  { colorId: 'COL001', colorName: 'Đen (Obsidian)', hexCode: '#09090b' },
+  { colorId: 'COL002', colorName: 'Trắng (Pure White)', hexCode: '#ffffff' },
+  { colorId: 'COL003', colorName: 'Xám Khói (Smoke Grey)', hexCode: '#71717a' },
+  { colorId: 'COL004', colorName: 'Beige (Sand Warm)', hexCode: '#d4c5b9' },
+  { colorId: 'COL005', colorName: 'Xanh Rêu (Olive Drab)', hexCode: '#4b5320' },
+  { colorId: 'COL006', colorName: 'Đỏ Rượu (Burgundy)', hexCode: '#7f1d1d' }
 ];
 
 export const mockSizes = [
@@ -26,14 +25,13 @@ export const mockSizes = [
   { sizeId: 'SZ005', sizeName: 'M', categoryId: 'CAT002' },
   { sizeId: 'SZ006', sizeName: 'L', categoryId: 'CAT002' },
   { sizeId: 'SZ007', sizeName: 'XL', categoryId: 'CAT002' },
-  { sizeId: 'SZ008', sizeName: 'FreeSize', categoryId: 'CAT003' },
-  { sizeId: 'SZ009', sizeName: 'S', categoryId: 'CAT004' },
-  { sizeId: 'SZ010', sizeName: 'M', categoryId: 'CAT004' },
-  { sizeId: 'SZ011', sizeName: 'L', categoryId: 'CAT004' },
-  { sizeId: 'SZ012', sizeName: '29', categoryId: 'CAT005' },
-  { sizeId: 'SZ013', sizeName: '30', categoryId: 'CAT005' },
-  { sizeId: 'SZ014', sizeName: '31', categoryId: 'CAT005' },
-  { sizeId: 'SZ015', sizeName: '32', categoryId: 'CAT005' }
+  { sizeId: 'SZ008', sizeName: '29', categoryId: 'CAT003' },
+  { sizeId: 'SZ009', sizeName: '30', categoryId: 'CAT003' },
+  { sizeId: 'SZ010', sizeName: '31', categoryId: 'CAT003' },
+  { sizeId: 'SZ011', sizeName: '32', categoryId: 'CAT003' },
+  { sizeId: 'SZ012', sizeName: 'S', categoryId: 'CAT004' },
+  { sizeId: 'SZ013', sizeName: 'M', categoryId: 'CAT004' },
+  { sizeId: 'SZ014', sizeName: 'FreeSize', categoryId: 'CAT005' }
 ];
 
 export const mockProducts = [
@@ -41,290 +39,219 @@ export const mockProducts = [
     productId: 'PROD001',
     categoryId: 'CAT001',
     categoryName: 'Tops & Tees',
-    name: 'Áo Thun Shark Streetwear Oversize',
+    name: 'Áo Thun Shark Streetwear Oversize 250gsm',
     tag: 'BESTSELLER',
-    description: 'Chất liệu cotton 100% 2 chiều 250gsm dày dặn, form oversize chuẩn phong cách đường phố. Hình in lụa công nghệ cao, sắc nét, không bong tróc sau nhiều lần giặt. Cổ áo bo rib 2.5cm chống bai dão.',
-    basePrice: 290000,
+    description: 'Chất liệu 100% Cotton 2 chiều định lượng 250gsm dày dặn đứng form. Hình in lụa tráng cao thành sắc nét, không bong tróc sau nhiều lần giặt. Cổ áo bo dệt 3cm chống dão.',
+    basePrice: 350000,
     rating: 4.9,
-    reviewCount: 128,
+    reviewCount: 148,
     status: 'Available',
     images: [
-      'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800',
-      'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=800',
-      'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=800'
+      { imageId: 'IMG001', imageUrl: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800', isPrimary: true },
+      { imageId: 'IMG002', imageUrl: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=800', isPrimary: false }
     ],
     variants: [
-      { variantId: 'VAR001', sizeId: 'SZ002', sizeName: 'M', colorId: 'COL001', colorName: 'Đen (Black)', hexCode: '#000000', sku: 'SHARK-M-BLK', stockQty: 50, reservedQty: 2, priceOverride: null },
-      { variantId: 'VAR002', sizeId: 'SZ003', sizeName: 'L', colorId: 'COL001', colorName: 'Đen (Black)', hexCode: '#000000', sku: 'SHARK-L-BLK', stockQty: 45, reservedQty: 0, priceOverride: null },
-      { variantId: 'VAR003', sizeId: 'SZ002', sizeName: 'M', colorId: 'COL002', colorName: 'Trắng (White)', hexCode: '#FFFFFF', sku: 'SHARK-M-WHT', stockQty: 30, reservedQty: 0, priceOverride: null },
-      { variantId: 'VAR004', sizeId: 'SZ003', sizeName: 'L', colorId: 'COL002', colorName: 'Trắng (White)', hexCode: '#FFFFFF', sku: 'SHARK-L-WHT', stockQty: 25, reservedQty: 1, priceOverride: null }
+      { variantId: 'VAR001', sizeName: 'M', colorName: 'Đen (Obsidian)', hexCode: '#09090b', stockQty: 50, priceOverride: 350000 },
+      { variantId: 'VAR002', sizeName: 'L', colorName: 'Đen (Obsidian)', hexCode: '#09090b', stockQty: 40, priceOverride: 350000 },
+      { variantId: 'VAR003', sizeName: 'M', colorName: 'Trắng (Pure White)', hexCode: '#ffffff', stockQty: 30, priceOverride: 350000 },
+      { variantId: 'VAR004', sizeName: 'L', colorName: 'Trắng (Pure White)', hexCode: '#ffffff', stockQty: 25, priceOverride: 350000 }
     ]
   },
   {
     productId: 'PROD002',
-    categoryId: 'CAT001',
-    categoryName: 'Tops & Tees',
-    name: 'Áo Thun Basic Boxy Fit Minimalist',
-    tag: 'SALE -10%',
-    description: 'Áo phông trơn chất vải cotton compact cao cấp chống nhăn, thoáng mát, dễ phối đồ hàng ngày. Form boxy fit hiện đại che khuyết điểm cực tốt.',
-    basePrice: 220000,
-    rating: 4.8,
-    reviewCount: 95,
+    categoryId: 'CAT002',
+    categoryName: 'Outerwear',
+    name: 'Áo Khoác Da Biker Asymmetric Metal Zip',
+    tag: 'HOT DROP',
+    description: 'Chất liệu da PU tổng hợp cao cấp chống nứt nổ, lót dù gió thoáng khí êm ái. Khóa kéo kim loại tĩnh điện sáng bóng phong cách Rockstar.',
+    basePrice: 1450000,
+    rating: 5.0,
+    reviewCount: 89,
     status: 'Available',
     images: [
-      'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=800',
-      'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=800'
+      { imageId: 'IMG003', imageUrl: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800', isPrimary: true },
+      { imageId: 'IMG004', imageUrl: 'https://images.unsplash.com/photo-1520975954732-35dd22299614?w=800', isPrimary: false }
     ],
     variants: [
-      { variantId: 'VAR005', sizeId: 'SZ002', sizeName: 'M', colorId: 'COL001', colorName: 'Đen (Black)', hexCode: '#000000', sku: 'BASIC-M-BLK', stockQty: 60, reservedQty: 0, priceOverride: 200000 },
-      { variantId: 'VAR006', sizeId: 'SZ003', sizeName: 'L', colorId: 'COL003', colorName: 'Be (Beige)', hexCode: '#F5F5DC', sku: 'BASIC-L-BGE', stockQty: 40, reservedQty: 0, priceOverride: 200000 }
+      { variantId: 'VAR005', sizeName: 'M', colorName: 'Đen (Obsidian)', hexCode: '#09090b', stockQty: 15, priceOverride: 1450000 },
+      { variantId: 'VAR006', sizeName: 'L', colorName: 'Đen (Obsidian)', hexCode: '#09090b', stockQty: 10, priceOverride: 1450000 }
     ]
   },
   {
     productId: 'PROD003',
-    categoryId: 'CAT001',
-    categoryName: 'Tops & Tees',
-    name: 'Áo Polo Vintage Classic Collar',
+    categoryId: 'CAT003',
+    categoryName: 'Pants & Jeans',
+    name: 'Quần Cargo Pants Multi-Pocket Tactical',
     tag: 'NEW ARRIVAL',
-    description: 'Thiết kế phối bo cổ retro lịch lãm, vải cá sấu mè co giãn 4 chiều mềm mịn, thấm hút mồ hôi tối đa. Phù hợp cả đi làm và đi chơi.',
-    basePrice: 350000,
-    rating: 4.7,
+    description: 'Vải Kaki thun co giãn nhẹ nhập khẩu, thiết kế 6 túi hộp đa năng phong cách Techwear. Dây rút gấu quần linh hoạt tùy chỉnh phom suông hoặc jogger.',
+    basePrice: 680000,
+    rating: 4.8,
     reviewCount: 64,
     status: 'Available',
     images: [
-      'https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=800',
-      'https://images.unsplash.com/photo-1626497764746-6dc36546b388?w=800'
+      { imageId: 'IMG005', imageUrl: 'https://images.unsplash.com/photo-1517445312882-bc9910d016b7?w=800', isPrimary: true },
+      { imageId: 'IMG006', imageUrl: 'https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?w=800', isPrimary: false }
     ],
     variants: [
-      { variantId: 'VAR007', sizeId: 'SZ002', sizeName: 'M', colorId: 'COL005', colorName: 'Xanh Navy', hexCode: '#000080', sku: 'POLO-M-NVY', stockQty: 35, reservedQty: 0, priceOverride: null },
-      { variantId: 'VAR008', sizeId: 'SZ003', sizeName: 'L', colorId: 'COL005', colorName: 'Xanh Navy', hexCode: '#000080', sku: 'POLO-L-NVY', stockQty: 30, reservedQty: 0, priceOverride: null }
+      { variantId: 'VAR007', sizeName: '30', colorName: 'Đen (Obsidian)', hexCode: '#09090b', stockQty: 25, priceOverride: 680000 },
+      { variantId: 'VAR008', sizeName: '31', colorName: 'Xám Khói (Smoke Grey)', hexCode: '#71717a', stockQty: 20, priceOverride: 680000 }
     ]
   },
   {
     productId: 'PROD004',
-    categoryId: 'CAT002',
-    categoryName: 'Outerwear',
-    name: 'Áo Hoodie Nỉ Bông Unisex Cyberpunk',
-    tag: 'HOT',
-    description: 'Vải nỉ bông định lượng 380gsm siêu ấm, mũ trùm 2 lớp đứng form cá tính với logo thêu sắc nét, túi kangaroo rộng rãi tiện lợi.',
-    basePrice: 450000,
-    rating: 5.0,
-    reviewCount: 210,
+    categoryId: 'CAT004',
+    categoryName: 'Dresses & Skirts',
+    name: 'Chân Váy Xếp Ly Tennis Pleated Skirt',
+    tag: 'TRENDING',
+    description: 'Phong cách trẻ trung K-Fashion, chất liệu tuyết mưa dày dặn giữ nếp gấp xếp ly sắc sảo không bị nhăn sau khi giặt.',
+    basePrice: 420000,
+    rating: 4.9,
+    reviewCount: 92,
     status: 'Available',
     images: [
-      'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=800',
-      'https://images.unsplash.com/photo-1509967419530-da38b4704bc6?w=800'
+      { imageId: 'IMG007', imageUrl: 'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=800', isPrimary: true },
+      { imageId: 'IMG008', imageUrl: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=800', isPrimary: false }
     ],
     variants: [
-      { variantId: 'VAR009', sizeId: 'SZ005', sizeName: 'M', colorId: 'COL001', colorName: 'Đen (Black)', hexCode: '#000000', sku: 'HOOD-M-BLK', stockQty: 40, reservedQty: 1, priceOverride: null },
-      { variantId: 'VAR010', sizeId: 'SZ006', sizeName: 'L', colorId: 'COL004', colorName: 'Xám (Grey)', hexCode: '#808080', sku: 'HOOD-L-GRY', stockQty: 35, reservedQty: 0, priceOverride: null }
+      { variantId: 'VAR009', sizeName: 'S', colorName: 'Đen (Obsidian)', hexCode: '#09090b', stockQty: 30, priceOverride: 420000 },
+      { variantId: 'VAR010', sizeName: 'M', colorName: 'Beige (Sand Warm)', hexCode: '#d4c5b9', stockQty: 25, priceOverride: 420000 }
     ]
   },
   {
     productId: 'PROD005',
     categoryId: 'CAT002',
     categoryName: 'Outerwear',
-    name: 'Áo Khoác Da Biker Jacket Supreme',
-    tag: 'LUXURY',
-    description: 'Chất da PU nhân tạo cao cấp chống nổ, lót dù gió thoáng khí, khóa kéo kim loại mạ tĩnh điện sáng bóng phong trần đầy cuốn hút.',
-    basePrice: 850000,
-    rating: 4.9,
-    reviewCount: 88,
+    name: 'Áo Hoodie Cyber Heavyweight 380gsm',
+    tag: 'LIMITED',
+    description: 'Vải nỉ chân cua 100% cotton 380gsm giữ ấm cực tốt, mũ 2 lớp dập phom đứng. Họa tiết dập nổi phong cách Cyberpunk độc bản.',
+    basePrice: 750000,
+    rating: 5.0,
+    reviewCount: 110,
     status: 'Available',
     images: [
-      'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800',
-      'https://images.unsplash.com/photo-1520975954732-35dd22299614?w=800'
+      { imageId: 'IMG009', imageUrl: 'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=800', isPrimary: true },
+      { imageId: 'IMG010', imageUrl: 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=800', isPrimary: false }
     ],
     variants: [
-      { variantId: 'VAR011', sizeId: 'SZ005', sizeName: 'M', colorId: 'COL001', colorName: 'Đen (Black)', hexCode: '#000000', sku: 'LEATH-M-BLK', stockQty: 20, reservedQty: 0, priceOverride: null },
-      { variantId: 'VAR012', sizeId: 'SZ006', sizeName: 'L', colorId: 'COL001', colorName: 'Đen (Black)', hexCode: '#000000', sku: 'LEATH-L-BLK', stockQty: 15, reservedQty: 0, priceOverride: null }
+      { variantId: 'VAR011', sizeName: 'L', colorName: 'Đen (Obsidian)', hexCode: '#09090b', stockQty: 45, priceOverride: 750000 }
     ]
   },
   {
     productId: 'PROD006',
-    categoryId: 'CAT002',
-    categoryName: 'Outerwear',
-    name: 'Áo Khoác Dù 2 Lớp Waterproof Windbreaker',
-    tag: '',
-    description: 'Vải dù miro 2 lớp cản gió chống nước chuẩn công nghệ Nhật Bản, dải viền phản quang trong đêm thể thao sành điệu.',
-    basePrice: 390000,
-    rating: 4.6,
-    reviewCount: 42,
+    categoryId: 'CAT003',
+    categoryName: 'Pants & Jeans',
+    name: 'Quần Raw Denim Ripped Baggy Jeans',
+    tag: 'EXCLUSIVE',
+    description: 'Vải Jean 100% Cotton wash màu xám khói, rách gối cá tính, phom suông rộng tôn dáng đường phố.',
+    basePrice: 790000,
+    rating: 4.8,
+    reviewCount: 57,
     status: 'Available',
     images: [
-      'https://images.unsplash.com/photo-1544441893-675973e31985?w=800'
+      { imageId: 'IMG011', imageUrl: 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=800', isPrimary: true },
+      { imageId: 'IMG012', imageUrl: 'https://images.unsplash.com/photo-1517445312882-bc9910d016b7?w=800', isPrimary: false }
     ],
     variants: [
-      { variantId: 'VAR013', sizeId: 'SZ005', sizeName: 'M', colorId: 'COL005', colorName: 'Xanh Navy', hexCode: '#000080', sku: 'WIND-M-NVY', stockQty: 50, reservedQty: 0, priceOverride: null }
+      { variantId: 'VAR012', sizeName: '31', colorName: 'Xám Khói (Smoke Grey)', hexCode: '#71717a', stockQty: 18, priceOverride: 790000 }
     ]
   },
   {
     productId: 'PROD007',
-    categoryId: 'CAT004',
-    categoryName: 'Dresses & Skirts',
-    name: 'Chân Váy Tag Kim Loại EcoChic Pink',
-    tag: 'TRENDING',
-    description: 'Chân váy chữ A đính tag kim loại sang trọng, tone màu hồng pastel thời thượng, kèm quần bảo hộ bên trong tiện lợi cho nàng tự tin dạo phố.',
-    basePrice: 320000,
-    rating: 4.8,
-    reviewCount: 76,
+    categoryId: 'CAT001',
+    categoryName: 'Tops & Tees',
+    name: 'Áo Thun Acid Washed Drop Shoulder',
+    tag: 'VINTAGE',
+    description: 'Công nghệ wash màu Acid loang độc bản 90s, form vai trễ thoải mái, chất vải cotton hữu cơ mềm mịn.',
+    basePrice: 390000,
+    rating: 4.9,
+    reviewCount: 75,
     status: 'Available',
     images: [
-      'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=800'
+      { imageId: 'IMG013', imageUrl: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=800', isPrimary: true }
     ],
     variants: [
-      { variantId: 'VAR014', sizeId: 'SZ009', sizeName: 'S', colorId: 'COL006', colorName: 'Hồng (Pink)', hexCode: '#FFC0CB', sku: 'SKIRT-S-PNK', stockQty: 25, reservedQty: 0, priceOverride: null },
-      { variantId: 'VAR015', sizeId: 'SZ010', sizeName: 'M', colorId: 'COL006', colorName: 'Hồng (Pink)', hexCode: '#FFC0CB', sku: 'SKIRT-M-PNK', stockQty: 20, reservedQty: 0, priceOverride: null }
+      { variantId: 'VAR013', sizeName: 'L', colorName: 'Xám Khói (Smoke Grey)', hexCode: '#71717a', stockQty: 35, priceOverride: 390000 }
     ]
   },
   {
     productId: 'PROD008',
-    categoryId: 'CAT004',
-    categoryName: 'Dresses & Skirts',
-    name: 'Chân Váy Xếp Ly Tennis Skirt White',
-    tag: 'POPULAR',
-    description: 'Phong cách trẻ trung năng động K-Fashion, nếp gấp xếp ly sắc sảo không biến dạng sau khi giặt, chất tuyết mưa dày dặn tôn dáng.',
-    basePrice: 280000,
-    rating: 4.9,
-    reviewCount: 114,
-    status: 'Available',
-    images: [
-      'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800'
-    ],
-    variants: [
-      { variantId: 'VAR016', sizeId: 'SZ009', sizeName: 'S', colorId: 'COL002', colorName: 'Trắng (White)', hexCode: '#FFFFFF', sku: 'TENNIS-S-WHT', stockQty: 30, reservedQty: 0, priceOverride: null },
-      { variantId: 'VAR017', sizeId: 'SZ010', sizeName: 'M', colorId: 'COL001', colorName: 'Đen (Black)', hexCode: '#000000', sku: 'TENNIS-M-BLK', stockQty: 30, reservedQty: 0, priceOverride: null }
-    ]
-  },
-  {
-    productId: 'PROD009',
     categoryId: 'CAT005',
-    categoryName: 'Pants & Jeans',
-    name: 'Quần Tây Âu Nam Nữ Straight Fit',
-    tag: 'ESSENTIAL',
-    description: 'Chất vải tuyết hàn cao cấp rủ nhẹ đứng dáng, cạp chun ẩn co giãn thông minh không lo chật bụng khi ngồi lâu.',
-    basePrice: 420000,
-    rating: 4.8,
-    reviewCount: 89,
-    status: 'Available',
-    images: [
-      'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=800'
-    ],
-    variants: [
-      { variantId: 'VAR018', sizeId: 'SZ013', sizeName: '30', colorId: 'COL001', colorName: 'Đen (Black)', hexCode: '#000000', sku: 'PANTS-30-BLK', stockQty: 40, reservedQty: 0, priceOverride: null },
-      { variantId: 'VAR019', sizeId: 'SZ014', sizeName: '31', colorId: 'COL004', colorName: 'Xám (Grey)', hexCode: '#808080', sku: 'PANTS-31-GRY', stockQty: 35, reservedQty: 0, priceOverride: null }
-    ]
-  },
-  {
-    productId: 'PROD010',
-    categoryId: 'CAT005',
-    categoryName: 'Pants & Jeans',
-    name: 'Quần Jean Baggy Rách Gối Wash Xám',
-    tag: 'HOT ITEM',
-    description: 'Vải denim 13.5oz dày dặn, wash acid tone xám khói vintage bụi bặm, form rộng thoải mái cá tính theo chuẩn xu hướng Y2K.',
-    basePrice: 490000,
-    rating: 4.7,
-    reviewCount: 65,
-    status: 'Available',
-    images: [
-      'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=800'
-    ],
-    variants: [
-      { variantId: 'VAR020', sizeId: 'SZ013', sizeName: '30', colorId: 'COL005', colorName: 'Xanh Navy', hexCode: '#000080', sku: 'JEAN-30-NVY', stockQty: 45, reservedQty: 0, priceOverride: null }
-    ]
-  },
-  {
-    productId: 'PROD011',
-    categoryId: 'CAT003',
     categoryName: 'Accessories',
-    name: 'Túi Canvas Đeo Chéo Multi-Pocket',
-    tag: '',
-    description: 'Túi vải bố canvas cao cấp dày dặn chống trầy, thiết kế nhiều ngăn tiện dụng vừa iPad, sổ tay và các vật dụng cá nhân.',
-    basePrice: 180000,
+    name: 'Mũ Cap NOVA Minimalist Metal Tag',
+    tag: 'ACCESSORY',
+    description: 'Vải Canvas thô đứng dáng, khóa cài kim loại khắc laser chìm thương hiệu NOVA cao cấp.',
+    basePrice: 290000,
     rating: 4.9,
-    reviewCount: 156,
+    reviewCount: 130,
     status: 'Available',
     images: [
-      'https://images.unsplash.com/photo-1544816155-12df9643f363?w=800'
+      { imageId: 'IMG014', imageUrl: 'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=800', isPrimary: true }
     ],
     variants: [
-      { variantId: 'VAR021', sizeId: 'SZ008', sizeName: 'FreeSize', colorId: 'COL003', colorName: 'Be (Beige)', hexCode: '#F5F5DC', sku: 'BAG-FREE-BGE', stockQty: 80, reservedQty: 0, priceOverride: null }
-    ]
-  },
-  {
-    productId: 'PROD012',
-    categoryId: 'CAT003',
-    categoryName: 'Accessories',
-    name: 'Nón Lưỡi Trai Thêu Logo Minimalist',
-    tag: '',
-    description: 'Chất kaki 100% cotton thoáng mát, khóa kim loại dập nổi sang trọng, form nón chuẩn xuất khẩu không mất form khi đội.',
-    basePrice: 150000,
-    rating: 4.9,
-    reviewCount: 140,
-    status: 'Available',
-    images: [
-      'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=800'
-    ],
-    variants: [
-      { variantId: 'VAR022', sizeId: 'SZ008', sizeName: 'FreeSize', colorId: 'COL001', colorName: 'Đen (Black)', hexCode: '#000000', sku: 'CAP-FREE-BLK', stockQty: 100, reservedQty: 0, priceOverride: null }
+      { variantId: 'VAR014', sizeName: 'FreeSize', colorName: 'Đen (Obsidian)', hexCode: '#09090b', stockQty: 60, priceOverride: 290000 }
     ]
   }
 ];
 
 export const mockUsers = [
-  { id: 'EMP001', username: 'admin', fullName: 'Trần Minh Admin', email: 'admin@gmail.com', role: 'Admin', salary: 25000000, status: 'Active', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300' },
-  { id: 'EMP002', username: 'staff01', fullName: 'Nguyễn Thu Staff', email: 'staff@gmail.com', role: 'Staff', salary: 12000000, status: 'Active', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300' },
-  { id: 'CUST001', username: 'nguyenvana', fullName: 'Nguyễn Văn A', email: 'customer@gmail.com', role: 'Customer', phone: '0901112223', address: '12 Hai Bà Trưng, Hoàn Kiếm, Hà Nội', status: 'Active', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=300' }
+  {
+    userId: 'USER001',
+    username: 'admin',
+    fullName: 'Quản Trị Viên Hệ Thống',
+    email: 'admin@novaapparel.vn',
+    role: 'admin',
+    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300'
+  },
+  {
+    userId: 'USER002',
+    username: 'staff01',
+    fullName: 'Nguyễn Văn Kho',
+    email: 'staff01@novaapparel.vn',
+    role: 'staff',
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300'
+  },
+  {
+    userId: 'USER003',
+    username: 'nguyenvana',
+    fullName: 'Nguyễn Văn A',
+    email: 'nguyenvana@gmail.com',
+    role: 'customer',
+    avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=300'
+  }
 ];
 
 export const mockOrders = [
   {
-    orderId: 'ORD001',
+    orderId: 'ORD1001',
     customerId: 'CUST001',
     customerName: 'Nguyễn Văn A',
-    customerPhone: '0901112223',
-    shippingAddress: '12 Hai Bà Trưng, Hoàn Kiếm, Hà Nội',
+    phone: '0987654321',
+    address: '123 Đường Cầu Giấy, Hà Nội',
     orderStatus: 'Delivered',
-    placedAt: '2026-08-22T14:30:00',
-    totalAmount: 740000,
-    paymentMethod: 'VNPay',
+    paymentMethod: 'Wallet',
     paymentStatus: 'Paid',
-    paidAmount: 740000,
+    paidAmount: 1800000,
+    totalAmount: 1800000,
+    createdAt: '2026-08-25T14:30:00Z',
     items: [
-      { orderItemId: 'ITEM001', productId: 'PROD001', productName: 'Áo Thun Shark Streetwear Oversize', variantId: 'VAR001', sizeName: 'M', colorName: 'Đen (Black)', quantity: 1, unitPrice: 290000, image: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800' },
-      { orderItemId: 'ITEM002', productId: 'PROD004', productName: 'Áo Hoodie Nỉ Bông Unisex Cyberpunk', variantId: 'VAR009', sizeName: 'M', colorName: 'Đen (Black)', quantity: 1, unitPrice: 450000, image: 'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=800' }
+      { variantId: 'VAR001', name: 'Áo Thun Shark Streetwear Oversize', sizeName: 'M', colorName: 'Đen (Obsidian)', unitPrice: 350000, quantity: 1, image: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800' },
+      { variantId: 'VAR006', name: 'Áo Khoác Da Biker Asymmetric Metal Zip', sizeName: 'L', colorName: 'Đen (Obsidian)', unitPrice: 1450000, quantity: 1, image: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800' }
     ]
   },
   {
-    orderId: 'ORD002',
+    orderId: 'ORD1002',
     customerId: 'CUST002',
     customerName: 'Trần Thị Bích',
-    customerPhone: '0903334445',
-    shippingAddress: '34 Điện Biên Phủ, Quận 3, TP.HCM',
+    phone: '0978123456',
+    address: '456 Lê Duẩn, Đà Nẵng',
     orderStatus: 'Shipping',
-    placedAt: '2026-08-27T09:15:00',
-    totalAmount: 320000,
     paymentMethod: 'COD',
     paymentStatus: 'Pending',
     paidAmount: 0,
+    totalAmount: 750000,
+    createdAt: '2026-08-28T09:15:00Z',
     items: [
-      { orderItemId: 'ITEM003', productId: 'PROD007', productName: 'Chân Váy Tag Kim Loại EcoChic Pink', variantId: 'VAR014', sizeName: 'S', colorName: 'Hồng (Pink)', quantity: 1, unitPrice: 320000, image: 'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=800' }
-    ]
-  },
-  {
-    orderId: 'ORD003',
-    customerId: 'CUST001',
-    customerName: 'Nguyễn Văn A',
-    customerPhone: '0901112223',
-    shippingAddress: '12 Hai Bà Trưng, Hoàn Kiếm, Hà Nội',
-    orderStatus: 'Pending',
-    placedAt: '2026-08-29T10:00:00',
-    totalAmount: 290000,
-    paymentMethod: 'Wallet',
-    paymentStatus: 'Paid',
-    paidAmount: 290000,
-    items: [
-      { orderItemId: 'ITEM004', productId: 'PROD001', productName: 'Áo Thun Shark Streetwear Oversize', variantId: 'VAR001', sizeName: 'M', colorName: 'Đen (Black)', quantity: 1, unitPrice: 290000, image: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800' }
+      { variantId: 'VAR011', name: 'Áo Hoodie Cyber Heavyweight 380gsm', sizeName: 'L', colorName: 'Đen (Obsidian)', unitPrice: 750000, quantity: 1, image: 'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=800' }
     ]
   }
 ];
@@ -335,43 +262,43 @@ export const mockWallet = {
   balance: 5000000,
   walletStatus: 'Active',
   transactions: [
-    { transactionId: 'WTX001', type: 'Deposit', amount: 2000000, status: 'Completed', method: 'VNPay', description: 'Nạp tiền vào ví qua VNPay', createdAt: '2026-08-19T11:20:00' },
-    { transactionId: 'WTX002', type: 'Purchase', amount: 290000, status: 'Completed', orderId: 'ORD003', description: 'Thanh toán đơn hàng #ORD003', createdAt: '2026-08-29T10:00:00' }
+    {
+      transactionId: 'WTX001',
+      transactionType: 'Deposit',
+      amount: 2000000,
+      transactionStatus: 'Completed',
+      description: 'Nạp tiền vào Ví Nova Wallet qua VNPay QR',
+      createdAt: '2026-08-24T10:00:00Z'
+    },
+    {
+      transactionId: 'WTX002',
+      transactionType: 'Purchase',
+      amount: 1800000,
+      transactionStatus: 'Completed',
+      description: 'Thanh toán đơn hàng ORD1001',
+      createdAt: '2026-08-25T14:30:00Z'
+    }
   ]
 };
-
-export const mockComments = [
-  { commentId: 'CMT001', productId: 'PROD001', variantName: 'Size M - Đen', customerName: 'Nguyễn Văn A', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=300', rating: 5, content: 'Áo chất vải rất dày dặn và mát mẻ, form oversize mặc cực kì ưng ý!', createdAt: '2026-08-24T15:20:00', status: 'Active' },
-  { commentId: 'CMT002', productId: 'PROD004', variantName: 'Size M - Đen', customerName: 'Nguyễn Văn A', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=300', rating: 5, content: 'Mũ áo hoodie dày dặn đứng form, lót nỉ mềm mịn giữ ấm siêu tốt.', createdAt: '2026-08-25T16:45:00', status: 'Active' },
-  { commentId: 'CMT003', productId: 'PROD007', variantName: 'Size S - Hồng', customerName: 'Trần Thị Bích', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300', rating: 4, content: 'Chân váy xinh, form chuẩn, tag sắt sáng bóng xịn xò.', createdAt: '2026-08-28T12:10:00', status: 'Active' }
-];
 
 export const mockAnalytics = {
-  totalRevenue: 154800000,
-  monthlyRevenue: 38200000,
-  totalOrders: 342,
-  totalCustomers: 1280,
-  salesOverTime: [
-    { day: 'Thứ 2', revenue: 4200000, orders: 12 },
-    { day: 'Thứ 3', revenue: 6800000, orders: 18 },
-    { day: 'Thứ 4', revenue: 5100000, orders: 14 },
-    { day: 'Thứ 5', revenue: 8900000, orders: 24 },
-    { day: 'Thứ 6', revenue: 12400000, orders: 35 },
-    { day: 'Thứ 7', revenue: 18500000, orders: 48 },
-    { day: 'Chủ Nhật', revenue: 15200000, orders: 42 }
-  ],
-  categoryShare: [
-    { name: 'Tops & Tees', value: 42, color: '#000000' },
-    { name: 'Outerwear', value: 28, color: '#00ff66' },
-    { name: 'Pants & Jeans', value: 16, color: '#7928ca' },
-    { name: 'Dresses & Skirts', value: 8, color: '#ff4d00' },
-    { name: 'Accessories', value: 6, color: '#f59e0b' }
+  totalRevenue: 345800000,
+  monthlyRevenue: 89400000,
+  totalOrders: 412,
+  activeCustomers: 1280,
+  revenueTrend: [
+    { month: 'T1', revenue: 45000000 },
+    { month: 'T2', revenue: 52000000 },
+    { month: 'T3', revenue: 68000000 },
+    { month: 'T4', revenue: 61000000 },
+    { month: 'T5', revenue: 75000000 },
+    { month: 'T6', revenue: 89400000 }
   ],
   topProducts: [
-    { id: 'PROD001', name: 'Áo Thun Shark Streetwear Oversize', sales: 340, revenue: 98600000 },
-    { id: 'PROD004', name: 'Áo Hoodie Nỉ Bông Unisex Cyberpunk', sales: 185, revenue: 83250000 },
-    { id: 'PROD005', name: 'Áo Khoác Da Biker Jacket Supreme', sales: 92, revenue: 78200000 },
-    { id: 'PROD002', name: 'Áo Thun Basic Boxy Fit Minimalist', sales: 240, revenue: 48000000 },
-    { id: 'PROD007', name: 'Chân Váy Tag Kim Loại EcoChic Pink', sales: 120, revenue: 38400000 }
+    { name: 'Áo Khoác Da Biker Asymmetric', sales: 84, revenue: 121800000 },
+    { name: 'Áo Thun Shark Streetwear', sales: 156, revenue: 54600000 },
+    { name: 'Áo Hoodie Cyber Heavyweight', sales: 62, revenue: 46500000 }
   ]
 };
+
+export const mockComments = [];

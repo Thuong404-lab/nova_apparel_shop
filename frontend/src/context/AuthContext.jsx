@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+﻿import React, { createContext, useContext, useState, useEffect } from 'react';
 import { authApi } from '../services/api';
 import { useToast } from './ToastContext';
 
@@ -13,6 +13,17 @@ export const AuthProvider = ({ children }) => {
     const existing = authApi.getCurrentUser();
     if (existing) {
       setUser(existing);
+    } else {
+      // Default to guest/demo customer
+      const defaultUser = {
+        userId: 'USER003',
+        username: 'nguyenvana',
+        fullName: 'Nguyễn Văn A',
+        email: 'nguyenvana@gmail.com',
+        role: 'customer',
+        avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=300'
+      };
+      setUser(defaultUser);
     }
     setLoading(false);
   }, []);
@@ -52,11 +63,47 @@ export const AuthProvider = ({ children }) => {
   };
 
   const switchDemoRole = async (roleName) => {
-    let targetUsername = 'nguyenvana';
-    if (roleName === 'Admin') targetUsername = 'admin';
-    if (roleName === 'Staff') targetUsername = 'staff01';
-    await login(targetUsername, '123456');
+    const r = roleName.toLowerCase();
+    if (r === 'admin') {
+      const adminUser = {
+        userId: 'USER001',
+        username: 'admin',
+        fullName: 'Quản Trị Viên Hệ Thống',
+        email: 'admin@novaapparel.vn',
+        role: 'admin',
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300'
+      };
+      setUser(adminUser);
+      localStorage.setItem('fms_current_user', JSON.stringify(adminUser));
+      addToast('Đã chuyển sang vai trò: QUẢN TRỊ VIÊN (ADMIN)', 'info');
+    } else if (r === 'staff') {
+      const staffUser = {
+        userId: 'USER002',
+        username: 'staff01',
+        fullName: 'Nguyễn Văn Kho',
+        email: 'staff01@novaapparel.vn',
+        role: 'staff',
+        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300'
+      };
+      setUser(staffUser);
+      localStorage.setItem('fms_current_user', JSON.stringify(staffUser));
+      addToast('Đã chuyển sang vai trò: NHÂN VIÊN KHO & BÁN HÀNG (STAFF)', 'info');
+    } else {
+      const custUser = {
+        userId: 'USER003',
+        username: 'nguyenvana',
+        fullName: 'Nguyễn Văn A',
+        email: 'nguyenvana@gmail.com',
+        role: 'customer',
+        avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=300'
+      };
+      setUser(custUser);
+      localStorage.setItem('fms_current_user', JSON.stringify(custUser));
+      addToast('Đã chuyển sang vai trò: KHÁCH HÀNG (CUSTOMER)', 'info');
+    }
   };
+
+  const role = user?.role?.toLowerCase() || 'guest';
 
   return (
     <AuthContext.Provider
@@ -68,9 +115,9 @@ export const AuthProvider = ({ children }) => {
         logout,
         switchDemoRole,
         isAuthenticated: !!user,
-        isAdmin: user?.role === 'Admin',
-        isStaff: user?.role === 'Staff' || user?.role === 'Admin',
-        isCustomer: user?.role === 'Customer'
+        isAdmin: role === 'admin',
+        isStaff: role === 'staff' || role === 'admin',
+        isCustomer: role === 'customer'
       }}
     >
       {children}

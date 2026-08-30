@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+﻿import React, { createContext, useContext, useState, useEffect } from 'react';
 import { wishlistApi } from '../services/api';
 import { useToast } from './ToastContext';
 
@@ -12,9 +12,12 @@ export const WishlistProvider = ({ children }) => {
     setWishlistIds(wishlistApi.get());
   }, []);
 
-  const toggleWishlist = (productId, productName = 'Sản phẩm') => {
-    const isAdding = !wishlistIds.includes(productId);
-    const updated = wishlistApi.toggle(productId);
+  const toggleWishlist = (productOrId, name = '') => {
+    const id = typeof productOrId === 'object' ? productOrId.productId : productOrId;
+    const productName = typeof productOrId === 'object' ? productOrId.name : name || 'Sản phẩm';
+    
+    const isAdding = !wishlistIds.includes(id);
+    const updated = wishlistApi.toggle(id);
     setWishlistIds([...updated]);
     if (isAdding) {
       addToast(`Đã thêm "${productName}" vào mục Yêu thích!`, 'success');
@@ -29,8 +32,10 @@ export const WishlistProvider = ({ children }) => {
     <WishlistContext.Provider
       value={{
         wishlistIds,
+        wishlist: wishlistIds,
         toggleWishlist,
         isFavorite,
+        isInWishlist: isFavorite,
         count: wishlistIds.length
       }}
     >
