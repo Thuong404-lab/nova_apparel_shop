@@ -110,7 +110,7 @@ export const ProductQuickViewModal = ({ product, isOpen, onClose }) => {
                 {formatCurrency(currentPrice)}
               </div>
 
-              {/* Color Options */}
+              {/* Color.java Options */}
               <div className="space-y-2">
                 <span className="text-xs font-bold text-zinc-900 block">Màu sắc:</span>
                 <div className="flex flex-wrap gap-2">

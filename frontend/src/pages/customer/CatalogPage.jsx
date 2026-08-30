@@ -67,7 +67,7 @@ export const CatalogPage = () => {
       if (p.basePrice > priceRange) {
         return false;
       }
-      // Color filter
+      // Color.java filter
       if (selectedColor !== 'all') {
         const hasColor = p.variants?.some((v) => v.colorId === selectedColor);
         if (!hasColor) return false;

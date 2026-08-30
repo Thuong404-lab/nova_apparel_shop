@@ -208,7 +208,7 @@ export const ProductCard = ({ product, onQuickView, index = 0 }) => {
           </Link>
         </div>
 
-        {/* Variants Color Swatches & Price */}
+        {/* Variants Color.java Swatches & Price */}
         <div className="flex items-end justify-between pt-2 border-t border-zinc-100">
           <div>
             <span className="text-[11px] text-zinc-400 block font-mono">Giá niêm yết</span>
@@ -217,7 +217,7 @@ export const ProductCard = ({ product, onQuickView, index = 0 }) => {
             </span>
           </div>
 
-          {/* Color Preview Dots */}
+          {/* Color.java Preview Dots */}
           <div className="flex items-center gap-1.5">
             {product.variants?.slice(0, 3).map((v, i) => (
               <button

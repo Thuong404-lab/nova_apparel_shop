@@ -215,7 +215,7 @@ export const ProductDetailPage = () => {
               </span>
             </div>
 
-            {/* Color Selector */}
+            {/* Color.java Selector */}
             <div className="space-y-3">
               <div className="flex justify-between items-center text-xs">
                 <span className="font-bold text-zinc-900 uppercase tracking-wider">Màu Sắc:</span>
