@@ -25,6 +25,6 @@ public class Color {
     private String colorName;
 
     @Column(name = "hexCode", length = 10)
-    private String hexName;
+    private String hexCode;
 
 }

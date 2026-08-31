@@ -64,4 +64,6 @@ public class Wallet {
     protected void onUpdate() {
         updatedAt = new Date();
     }
+
+
 }
