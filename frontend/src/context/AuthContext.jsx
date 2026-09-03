@@ -1,4 +1,4 @@
-﻿import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { authApi } from '../services/api';
 import { useToast } from './ToastContext';
 
@@ -14,16 +14,7 @@ export const AuthProvider = ({ children }) => {
     if (existing) {
       setUser(existing);
     } else {
-      // Default to guest/demo customer
-      const defaultUser = {
-        userId: 'USER003',
-        username: 'nguyenvana',
-        fullName: 'Nguyễn Văn A',
-        email: 'nguyenvana@gmail.com',
-        role: 'customer',
-        avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=300'
-      };
-      setUser(defaultUser);
+      setUser(null);
     }
     setLoading(false);
   }, []);
@@ -31,13 +22,15 @@ export const AuthProvider = ({ children }) => {
   const login = async (username, password) => {
     try {
       const res = await authApi.login({ username, password });
-      if (res.success) {
+      if (res && res.success) {
         setUser(res.user);
         addToast(`Chào mừng trở lại, ${res.user.fullName}!`, 'success', 'ĐĂNG NHẬP THÀNH CÔNG');
         return true;
       }
+      addToast(res?.message || 'Tên đăng nhập hoặc mật khẩu không chính xác!', 'error', 'ĐĂNG NHẬP THẤT BẠI');
+      return false;
     } catch (err) {
-      addToast('Tên đăng nhập hoặc mật khẩu không chính xác!', 'error', 'ĐĂNG NHẬP THẤT BẠI');
+      addToast('Không thể kết nối đến máy chủ Backend!', 'error', 'ĐĂNG NHẬP THẤT BẠI');
       return false;
     }
   };
@@ -58,6 +51,8 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     authApi.logout();
+    localStorage.removeItem('nova_jwt_token');
+    localStorage.removeItem('fms_user');
     setUser(null);
     addToast('Bạn đã đăng xuất khỏi hệ thống.', 'info', 'ĐÃ ĐĂNG XUẤT');
   };
