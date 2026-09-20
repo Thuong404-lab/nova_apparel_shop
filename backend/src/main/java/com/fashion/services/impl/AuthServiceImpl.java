@@ -2,14 +2,16 @@ package com.fashion.services.impl;
 
 import com.fashion.components.JwtTokenUtil;
 import com.fashion.dtos.LoginDTO;
+import com.fashion.dtos.SocialLoginDTO;
 import com.fashion.enums.Role;
-import com.fashion.models.Customer;
-import com.fashion.models.Employee;
+import com.fashion.entity.Customer;
+import com.fashion.entity.Employee;
 import com.fashion.repositories.CustomerRepository;
 import com.fashion.repositories.EmployeeRepository;
 import com.fashion.responses.AuthResponse;
 import com.fashion.responses.UserResponse;
 import com.fashion.services.AuthService;
+import com.google.api.client.util.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +24,8 @@ public class AuthServiceImpl implements AuthService {
     private final EmployeeRepository employeeRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenUtil jwtTokenUtil;
+    @Value("${google.client-id}")
+    private String googleClientId;
 
     public AuthServiceImpl(CustomerRepository customerRepository, EmployeeRepository employeeRepository, PasswordEncoder passwordEncoder, JwtTokenUtil jwtTokenUtil) {
         this.customerRepository = customerRepository;
@@ -105,5 +109,20 @@ public class AuthServiceImpl implements AuthService {
                     .build();
         }
         throw new RuntimeException("Tên đăng nhập hoặc mật khẩu không chính xác!");
+    }
+
+    @Override
+    public AuthResponse loginWithSocial(SocialLoginDTO dto) {
+        String provider = dto.getProvider().trim().toUpperCase();
+
+        if ("GOOGLE".equals(provider)) {
+            return processGoogleLogin(dto.getToken());
+        } else if ("FACEBOOK".equals(provider)) {
+            throw new RuntimeException("Đăng nhập Facebook đang được phát triển!");
+        } else if ("GITHUB".equals(provider)) {
+            throw new RuntimeException("Đăng nhập GitHub đang được phát triển!");
+        } else {
+            throw new RuntimeException("Phương thức đăng nhập không được hỗ trợ: " + provider);
+        }
     }
 }

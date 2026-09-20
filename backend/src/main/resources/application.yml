@@ -35,3 +35,7 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
     operationsSorter: method
+
+google:
+  client-id: ${GOOGLE_CLIENT_ID:your-client-id-here.apps.googleusercontent.com}
+

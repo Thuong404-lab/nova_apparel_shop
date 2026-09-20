@@ -1,6 +1,6 @@
 package com.fashion.repositories;
 
-import com.fashion.models.Employee;
+import com.fashion.entity.Employee;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
