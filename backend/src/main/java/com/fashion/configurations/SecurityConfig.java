@@ -1,7 +1,11 @@
 package com.fashion.configurations;
 
+import com.fashion.enums.Role;
+import com.fashion.filters.JwtTokenFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -9,10 +13,14 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final JwtTokenFilter jwtTokenFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -32,10 +40,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Cho phép TỰ DO truy cập (permitAll) vào các API đăng nhập và tài liệu Swagger mà không cần Token
                         .requestMatchers("/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
-
-                        // Các API còn lại tạm thời cũng cho phép để bạn test dễ dàng
-                        .anyRequest().permitAll()
-                );
+                        .requestMatchers(HttpMethod.GET, "/api/products/**", "/api/categories/**").permitAll()
+                        .requestMatchers("/api/staff/**").hasAnyRole(Role.ADMIN.name(), Role.STAFF.name())
+                        .requestMatchers("/api/admin/**").hasRole(Role.ADMIN.name())
+                        .anyRequest().authenticated()
+                )
+                .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

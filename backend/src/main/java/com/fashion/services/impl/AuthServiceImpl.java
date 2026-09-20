@@ -2,6 +2,7 @@ package com.fashion.services.impl;
 
 import com.fashion.components.JwtTokenUtil;
 import com.fashion.dtos.LoginDTO;
+import com.fashion.enums.Role;
 import com.fashion.models.Customer;
 import com.fashion.models.Employee;
 import com.fashion.repositories.CustomerRepository;
@@ -49,7 +50,7 @@ public class AuthServiceImpl implements AuthService {
                 throw new RuntimeException("Tài khoản của bạn bị khóa hoặc chưa kích hoạt");
 
             // Tạo token
-            String token = jwtTokenUtil.generateToken(customer.getCustomerId(), customer.getUsername(), "Customer");
+            String token = jwtTokenUtil.generateToken(customer.getCustomerId(), customer.getUsername(), Role.CUSTOMER.name());
 
             UserResponse userResponse = UserResponse.builder()
                     .id(customer.getCustomerId())
@@ -57,7 +58,7 @@ public class AuthServiceImpl implements AuthService {
                     .fullName((customer.getFullName()))
                     .email(customer.getEmail())
                     .phone(customer.getPhone())
-                    .role("Customer")
+                    .role(Role.CUSTOMER.name())
                     .status(customer.getStatus())
                     .avatar(customer.getAvatar())
                     .build();
@@ -83,8 +84,8 @@ public class AuthServiceImpl implements AuthService {
 
             if (!"Active".equalsIgnoreCase(employee.getStatus()))
                 throw new RuntimeException("Tài khoản bị vô hiệu hóa hoặc không tồn tại");
-
-            String token = jwtTokenUtil.generateToken(employee.getEmployeeId(), employee.getUsername(), employee.getRole());
+            Role employeeRole  = Role.fromString(employee.getRole());
+            String token = jwtTokenUtil.generateToken(employee.getEmployeeId(), employee.getUsername(), employeeRole.name());
 
             UserResponse userResponse = UserResponse.builder()
                     .id(employee.getEmployeeId())
@@ -92,7 +93,7 @@ public class AuthServiceImpl implements AuthService {
                     .fullName(employee.getFullName())
                     .email(employee.getEmail())
                     .phone(employee.getPhone())
-                    .role(employee.getRole())
+                    .role(employeeRole.name())
                     .avatar(employee.getAvatar())
                     .status(employee.getStatus())
                     .build();

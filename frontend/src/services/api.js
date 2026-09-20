@@ -50,9 +50,9 @@ const initLocalStorage = () => {
   if (!localStorage.getItem(STORAGE_KEYS.COMMENTS)) {
     localStorage.setItem(STORAGE_KEYS.COMMENTS, JSON.stringify(mockComments));
   }
-  if (!localStorage.getItem(STORAGE_KEYS.USER)) {
-    localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(mockUsers[2])); // default customer
-  }
+  // if (!localStorage.getItem(STORAGE_KEYS.USER)) {
+  //   localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(mockUsers[2])); // default customer
+  // }
 };
 
 initLocalStorage();
