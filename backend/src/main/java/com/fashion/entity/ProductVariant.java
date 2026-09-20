@@ -1,4 +1,4 @@
-package com.fashion.models;
+package com.fashion.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
