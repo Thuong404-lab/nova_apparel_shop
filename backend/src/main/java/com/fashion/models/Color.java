@@ -18,6 +18,13 @@ import lombok.Setter;
 public class Color {
 
     @Id
-    @Column(name = "colorId", length = 20)
+    @Column(name = "colorId", length = 20, nullable = false)
     private String colorId;
+
+    @Column(name = "colorName", length = 50, nullable = false)
+    private String colorName;
+
+    @Column(name = "hexCode", length = 10)
+    private String hexCode;
+
 }

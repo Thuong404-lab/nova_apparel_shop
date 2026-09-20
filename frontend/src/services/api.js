@@ -1,4 +1,4 @@
-﻿// Unified API Service Layer with Mock/Live Switching
+// Unified API Service Layer with Mock/Live Switching
 
 import {
   mockProducts,
@@ -13,7 +13,7 @@ import {
 } from '../data/mockData';
 
 // Switch this flag to false when connecting to the Spring Boot REST API
-export const USE_MOCK_DATA = true;
+export const USE_MOCK_DATA = false;
 export const API_BASE_URL = 'http://localhost:8080/api';
 
 // Local storage keys
@@ -50,9 +50,9 @@ const initLocalStorage = () => {
   if (!localStorage.getItem(STORAGE_KEYS.COMMENTS)) {
     localStorage.setItem(STORAGE_KEYS.COMMENTS, JSON.stringify(mockComments));
   }
-  if (!localStorage.getItem(STORAGE_KEYS.USER)) {
-    localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(mockUsers[2])); // default customer
-  }
+  // if (!localStorage.getItem(STORAGE_KEYS.USER)) {
+  //   localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(mockUsers[2])); // default customer
+  // }
 };
 
 initLocalStorage();
@@ -67,7 +67,7 @@ export const authApi = {
       const user = mockUsers.find(u => u.username === username.trim().toLowerCase()) || {
         id: 'CUST_' + Date.now(),
         username: username,
-        fullName: username === 'admin' ? 'Admin Manager' : username === 'staff' ? 'Staff Member' : 'KhÃ¡ch hÃ ng ' + username,
+        fullName: username === 'admin' ? 'Admin Manager' : username === 'staff' ? 'Staff Member' : 'Khách hàng ' + username,
         role: username.includes('admin') ? 'Admin' : username.includes('staff') ? 'Staff' : 'Customer',
         email: `${username}@gmail.com`,
         status: 'Active',
@@ -76,12 +76,31 @@ export const authApi = {
       localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
       return { success: true, token: 'mock-jwt-token-' + Date.now(), user };
     }
-    const res = await fetch(`${API_BASE_URL}/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password })
-    });
-    return res.json();
+    try {
+      const res = await fetch(`${API_BASE_URL}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userName: username, username, password })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        if (data.token) {
+          localStorage.setItem('nova_jwt_token', data.token);
+        }
+        if (data.user) {
+          // Normalize userName -> username for frontend compatibility
+          const normalizedUser = {
+            ...data.user,
+            username: data.user.userName || data.user.username || data.user.fullName
+          };
+          localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(normalizedUser));
+          return { ...data, user: normalizedUser };
+        }
+      }
+      return data;
+    } catch (error) {
+      return { success: false, message: 'Không thể kết nối đến máy chủ Backend (Port 8080)!' };
+    }
   },
 
   register: async (data) => {

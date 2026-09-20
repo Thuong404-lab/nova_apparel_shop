@@ -1,13 +1,13 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Lock, User, ArrowRight, Sparkles, ShieldCheck } from 'lucide-react';
+import { Lock, User, ArrowRight } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import confetti from 'canvas-confetti';
 
 export const LoginPage = () => {
-  const { login, switchDemoRole } = useAuth();
+  const { login } = useAuth();
   const { addToast } = useToast();
   const navigate = useNavigate();
 
@@ -21,15 +21,22 @@ export const LoginPage = () => {
     const success = await login(username, password);
     setLoading(false);
     if (success) {
-      navigate('/');
+      confetti({
+        particleCount: 40,
+        spread: 60,
+        origin: { y: 0.6 }
+      });
+      const rawUser = localStorage.getItem('fms_user');
+      const currentUser = rawUser ? JSON.parse(rawUser) : null;
+      const r = currentUser?.role?.toLowerCase();
+      if (r === 'admin') {
+        navigate('/admin');
+      } else if (r === 'staff') {
+        navigate('/staff');
+      } else {
+        navigate('/');
+      }
     }
-  };
-
-  const handleQuickDemo = async (role) => {
-    await switchDemoRole(role);
-    if (role === 'admin') navigate('/admin');
-    else if (role === 'staff') navigate('/staff');
-    else navigate('/');
   };
 
   const handleSocialLogin = async (provider) => {
@@ -155,36 +162,6 @@ export const LoginPage = () => {
               <div className="flex-1 h-px bg-zinc-200"></div>
               <span className="text-[11px] text-zinc-400 font-mono">hoặc tài khoản hệ thống</span>
               <div className="flex-1 h-px bg-zinc-200"></div>
-            </div>
-
-            {/* Quick Demo Login Tabs */}
-            <div className="p-3 bg-zinc-50 rounded-2xl border border-zinc-200/80 space-y-2">
-              <span className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider block">
-                ⚡ Đăng Nhập Nhanh (1-Click Demo Roles)
-              </span>
-              <div className="grid grid-cols-3 gap-2">
-                <button
-                  type="button"
-                  onClick={() => handleQuickDemo('customer')}
-                  className="py-2 px-3 rounded-xl bg-white border border-zinc-200 text-xs font-bold hover:border-zinc-950 transition-colors shadow-2xs cursor-pointer"
-                >
-                  Khách Hàng
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleQuickDemo('staff')}
-                  className="py-2 px-3 rounded-xl bg-white border border-zinc-200 text-xs font-bold hover:border-zinc-950 transition-colors shadow-2xs cursor-pointer"
-                >
-                  Nhân Viên
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleQuickDemo('admin')}
-                  className="py-2 px-3 rounded-xl bg-purple-50 border border-purple-200 text-purple-700 text-xs font-bold hover:bg-purple-100 transition-colors shadow-2xs cursor-pointer"
-                >
-                  Quản Trị Viên
-                </button>
-              </div>
             </div>
 
             {/* Form */}
